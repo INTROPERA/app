@@ -697,24 +697,36 @@
         /* Media Queries para Responsividad Total */
         @media (max-width: 600px) {
             body:not(.content-active) {
-                padding-top: 15vh; /* Baja el contenido para que llene el centro de la pantalla */
+                padding-top: 0;
+                align-items: center; /* Centrado vertical */
+                justify-content: center;
+                height: 100vh;
             }
+
+            body:not(.content-active) .container {
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 20px;
+            }
+
             .logo {
-                font-size: 16vw; /* Tamaño masivo para impacto inmediato */
-                letter-spacing: 2.2vw;
-                margin-right: -2.2vw; 
+                font-size: 10vw; /* Tamaño máximo para ocupar el ancho sin desaparecer */
+                letter-spacing: 1.5vw;
+                margin-right: -1.5vw; 
             }
 
             .tagline {
-                font-size: 1.8rem;
-                letter-spacing: 8px;
-                margin-top: 40px;
+                font-size: 2rem;
+                letter-spacing: 10px;
+                margin-top: 50px;
             }
 
             .divider {
-                margin: 70px auto; /* Gran separación para llenar el vacío vertical */
-                height: 4px;
-                opacity: 0.8;
+                margin: 80px auto;
+                height: 6px;
+                opacity: 0.9;
             }
 
             /* Reducir ligeramente el logo cuando el contenido está activo para dar espacio a la interfaz */
@@ -749,23 +761,31 @@
             }
 
             .start-circle {
-                width: 92vw; /* Ocupa casi el 100% del ancho del celular */
-                height: 92vw;
-                font-size: 3.5rem; /* Texto muy grande y legible */
-                border-width: 5px;
-                margin-top: 100px;
-                box-shadow: 0 0 60px rgba(0, 229, 255, 0.3);
+                width: 95vw; /* Casi el ancho total del dispositivo */
+                height: 95vw;
+                font-size: 5rem; /* Texto de entrada colosal */
+                border-width: 10px;
+                margin-top: 120px;
+                box-shadow: 0 0 100px rgba(0, 229, 255, 0.5);
             }
 
             #saved-avatar-img {
-                width: 200px !important;
-                height: 200px !important;
-                margin-bottom: 40px !important;
+                width: 320px !important;
+                height: 320px !important;
+                margin-bottom: 60px !important;
             }
 
             #saved-name-text {
-                font-size: 3rem !important;
-                max-width: 90% !important;
+                font-size: 4rem !important;
+                max-width: 95% !important;
+                letter-spacing: 2px;
+            }
+
+            #txt-enter {
+                font-size: 2rem !important;
+                margin-top: 30px !important;
+                opacity: 1 !important;
+                letter-spacing: 8px !important;
             }
 
             .avatar-option {
