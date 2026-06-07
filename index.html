@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTROPERA</title>
+    <!-- Importación de fuentes: Montserrat para el cuerpo y Syncopate para el logo -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-turquoise: #00e5ff;
+            --bg-black: #050505;
+            --card-bg: rgba(18, 18, 18, 0.8);
+            --text-white: #ffffff;
+            --text-muted: #888888;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* Luces ambientales que dan profundidad al fondo */
+            background-image: 
+                radial-gradient(circle at 50% -20%, rgba(0, 229, 255, 0.12), transparent 70%),
+                radial-gradient(circle at 90% 90%, rgba(0, 229, 255, 0.06), transparent 50%);
+            overflow: hidden;
+        }
+
+        /* Textura de grano sutil para evitar el negro plano */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.04;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Y%3Cfilter id='noiseFilter'%3Y%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3Y%3C/filter%3Y%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3Y%3C/svg%3Y");
+            z-index: 0;
+        }
+
+        body.content-active {
+            align-items: flex-start;
+            padding: 40px 0 0 0;
+            overflow-y: auto;
+        }
+
+        body.content-active .container {
+            max-width: 100%;
+            box-sizing: border-box;
+            padding-left: 60px;
+            padding-right: 60px;
+            transition: var(--transition);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 40px);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: 12px;
+            margin: 0;
+            display: inline-block;
+            margin-right: -12px; /* Compensa el letter-spacing para un centrado perfecto */
+            text-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
+            color: var(--text-white);
+        }
+
+        .tagline {
+            color: var(--neon-turquoise);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        .divider {
+            height: 1px;
+            width: 100%; /* Renglón que ocupa todo el ancho para mejor centrado */
+            background: linear-gradient(90deg, transparent, #e0f7fa, transparent);
+            margin: 20px auto;
+            opacity: 0.5;
+        }
+
+        .settings-container {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+
+        .settings-btn {
+            color: var(--neon-turquoise);
+            cursor: pointer;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 12px;
+            padding: 8px 0;
+            min-width: 170px;
+            display: none;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .settings-menu.active {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 15px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .menu-item:hover {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--neon-turquoise);
+        }
+
+        .settings-btn:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+            filter: drop-shadow(0 0 8px var(--neon-turquoise));
+        }
+
+        .section-title {
+            font-family: 'Syncopate', sans-serif;
+            color: var(--neon-turquoise);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 40px 0 20px;
+            text-align: left;
+            opacity: 0.9;
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+        }
+
+        #app-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        #content-view {
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .empty-state {
+            padding: 60px 20px;
+            border: 1px dashed rgba(0, 229, 255, 0.2);
+            border-radius: 20px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-size: 0.8rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .avatar-preview { margin-bottom: 30px; }
+
+        #preview-img {
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--neon-turquoise);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+            padding: 5px;
+            background: var(--bg-black);
+        }
+
+        .form-group { text-align: left; margin-bottom: 25px; }
+        .form-group label {
+            font-size: 0.65rem; font-weight: 700;
+            color: var(--text-muted); letter-spacing: 1.5px;
+            margin-bottom: 10px; display: block;
+        }
+
+        .form-group input {
+            width: 100%; background: transparent; border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 0; color: white; font-family: inherit;
+            outline: none; transition: var(--transition);
+        }
+
+        .form-group input:focus { border-color: var(--neon-turquoise); }
+
+        .avatar-options {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+
+        .avatar-option {
+            width: 55px; height: 55px;
+            border-radius: 50%; cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition); object-fit: cover; opacity: 0.6;
+        }
+
+        .avatar-option:hover, .avatar-option.selected {
+            opacity: 1; border-color: var(--neon-turquoise);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        }
+
+        button {
+            width: 100%; background: var(--neon-turquoise); color: var(--bg-black);
+            border: none; padding: 16px; border-radius: 8px;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; transition: var(--transition); margin-top: 10px;
+        }
+
+        button:hover {
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        #video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        #video-overlay video {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            display: none;
+        }
+
+        .entry-view {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 0;
+        }
+
+        .start-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 1px solid var(--neon-turquoise);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            color: var(--neon-turquoise);
+            background: rgba(0, 229, 255, 0.05);
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
+            text-transform: uppercase;
+        }
+
+        .start-circle:hover {
+            background: var(--neon-turquoise);
+            color: var(--bg-black);
+            box-shadow: 0 0 50px rgba(0, 229, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Estilos del Menú Lateral */
+        .main-menu-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            z-index: 101;
+            color: var(--neon-turquoise);
+            cursor: pointer;
+            display: none;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        body.content-active .main-menu-btn {
+            display: block;
+        }
+
+        .main-menu-btn:hover {
+            opacity: 1;
+            filter: drop-shadow(0 0 8px var(--neon-turquoise));
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background: rgba(5, 5, 5, 0.98);
+            backdrop-filter: blur(20px);
+            box-shadow: none;
+            z-index: 2100;
+            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 100px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .side-menu.active {
+            left: 0;
+        }
+
+        .side-menu-item {
+            color: var(--text-white);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            font-family: 'Syncopate', sans-serif;
+            text-transform: uppercase;
+            transition: var(--transition);
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .side-menu-item:hover {
+            opacity: 1;
+            color: var(--neon-turquoise);
+            padding-left: 10px;
+        }
+
+        .close-menu {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            color: var(--neon-turquoise);
+            cursor: pointer;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .close-menu:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        /* Estilos de la sección de reglas */
+        .rules-container {
+            position: relative;
+            text-align: left;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            border: 1px solid rgba(0, 229, 255, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        .rules-container h2 {
+            font-family: 'Syncopate', sans-serif;
+            color: var(--neon-turquoise);
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .rules-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .rules-list li {
+            margin-bottom: 18px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            color: var(--text-white);
+            display: flex;
+            gap: 12px;
+            opacity: 0.8;
+        }
+        .rules-list li::before {
+            content: "›";
+            color: var(--neon-turquoise);
+            font-weight: 700;
+        }
+        .creator-credits {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .close-rules {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--neon-turquoise);
+            cursor: pointer;
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+        .close-rules:hover {
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        /* Estilos de la barra de búsqueda (Solo segunda pantalla) */
+        .search-box {
+            position: relative;
+            margin: 30px auto 0;
+            display: none;
+            max-width: 550px;
+            width: 100%;
+            align-items: center;
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        body.content-active .search-box {
+            display: flex;
+        }
+
+        .search-box input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            border-radius: 40px;
+            padding: 18px 25px 18px 60px;
+            color: white;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .search-box input:focus {
+            border-color: var(--neon-turquoise);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.15), inset 0 0 10px rgba(0, 229, 255, 0.1);
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 22px;
+            color: var(--neon-turquoise);
+            pointer-events: none;
+            opacity: 0.8;
+            width: 24px;
+            height: 24px;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            margin-top: 10px;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            display: none;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .result-item {
+            padding: 15px 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .result-item:last-child { border-bottom: none; }
+
+        .result-item:hover {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--neon-turquoise);
+        }
+
+        .main-footer {
+            margin-top: auto;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(0, 229, 255, 0.1);
+            text-align: center;
+        }
+
+        .main-footer p {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .tiktok-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--neon-turquoise);
+            text-decoration: none;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            transition: var(--transition);
+            opacity: 0.7;
+        }
+
+        .tiktok-link:hover {
+            opacity: 1;
+            text-shadow: 0 0 10px var(--neon-turquoise);
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <div class="settings-btn" onclick="toggleSettings()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+        </div>
+        <div id="settings-menu" class="settings-menu">
+            <div class="menu-item" id="lang-toggle" onclick="changeLanguage()">Idioma: Inglés</div>
+        </div>
+    </div>
+
+    <div class="main-menu-btn" onclick="toggleSideMenu()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </div>
+
+    <div id="side-menu" class="side-menu">
+        <div class="close-menu" onclick="toggleSideMenu()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </div>
+        <a href="#" class="side-menu-item" onclick="navigateTo('home')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span id="m-home">Inicio</span>
+        </a>
+        <a href="#" class="side-menu-item" onclick="navigateTo('series')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M7 3v18"/><path d="M17 3v18"/><path d="M3 7h4"/><path d="M3 12h4"/><path d="M3 17h4"/><path d="M17 7h4"/><path d="M17 12h4"/><path d="M17 17h4"/></svg>
+            <span id="m-series">Series</span>
+        </a>
+        <a href="#" class="side-menu-item" onclick="navigateTo('profile')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span id="m-profile">Perfil</span>
+        </a>
+        <a href="#" class="side-menu-item" onclick="navigateTo('brand')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            <span id="m-brand">Intropera</span>
+        </a>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1 class="logo">INTROPERA</h1>
+            <div class="divider"></div>
+            <p class="tagline" id="txt-tagline">Plataforma de Streaming Indie</p>
+            <div class="search-box">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="search-input" placeholder="Buscar series..." oninput="filterSeries()" autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </header>
+        <div id="app-content">
+            <!-- Pantalla inicial de entrada -->
+            <div id="entry-view" class="entry-view">
+                <div id="register-ui">
+                    <div class="start-circle" onclick="showRegistration()" id="btn-entry">Regístrate</div>
+                </div>
+
+                <div id="saved-profile-ui" style="display: none; flex-direction: column; align-items: center;">
+                    <div class="start-circle" onclick="enterWithProfile()">
+                        <img id="saved-avatar-img" src="" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--neon-turquoise); margin-bottom: 10px;">
+                        <span id="saved-name-text" style="font-size: 0.8rem; display: block; overflow: hidden; text-overflow: ellipsis; max-width: 140px; letter-spacing: 1px;"></span>
+                        <small style="font-size: 0.5rem; margin-top: 5px; opacity: 0.8;" id="txt-enter">Entrar</small>
+                    </div>
+                    <div onclick="clearProfile()" style="margin-top: 20px; font-size: 0.65rem; color: var(--text-muted); cursor: pointer; text-transform: uppercase; letter-spacing: 1px;" id="btn-logout">Eliminar Perfil</div>
+                </div>
+            </div>
+
+            <div class="card" id="profile-view" style="display: none;">
+                <div class="avatar-preview">
+                    <img id="preview-img" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=050505" alt="Avatar">
+                </div>
+                <div class="form-group">
+                    <label for="profile-name" id="lbl-username">NOMBRE DE USUARIO</label>
+                    <input type="text" id="profile-name" placeholder="Ingresa tu nombre..." autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label id="lbl-avatar">SELECCIONA TU AVATAR</label>
+                    <div class="avatar-options">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Masculino 1">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=James&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Masculino 2">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Aneka&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Femenino 1">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Mimi&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Femenino 2">
+                    </div>
+                </div>
+                <button onclick="saveProfile()" id="btn-start">Comenzar Experiencia</button>
+            </div>
+
+            <!-- Nueva pantalla de contenidos -->
+            <div id="content-view" style="display: none;">
+                <div id="default-content">
+                    <h2 class="section-title" id="txt-newest">Lo más nuevo</h2>
+                    <div class="empty-state" id="txt-no-content">sin contenido</div>
+                </div>
+
+                <div id="intropera-section" style="display: none;">
+                    <div class="rules-container">
+                        <div class="close-rules" onclick="navigateTo('home')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </div>
+                        <h2 id="rules-title">Reglas de Intropera</h2>
+                        <ul class="rules-list">
+                            <li id="rule-1">Plataforma dedicada exclusivamente al contenido indie.</li>
+                            <li id="rule-2">Los capítulos se presentan únicamente con el permiso explícito de los autores.</li>
+                            <li id="rule-3">Queda estrictamente prohibida la publicación de material sin autorización.</li>
+                            <li id="rule-4">Respeto absoluto a los derechos de autor y propiedad intelectual.</li>
+                        </ul>
+                        <div class="creator-credits" id="creator-info">creador: programador: DIEGO VGXX</div>
+                    </div>
+                </div>
+
+                <footer class="main-footer">
+                    <p id="txt-footer">© 2026 INTROPERA todos los derechos reservados siguenos en nuestras redes oficiales.</p>
+                    <a href="https://www.tiktok.com/@intropera" target="_blank" class="tiktok-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+                        TIKTOK: INTROPERA
+                    </a>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="particles-canvas"></canvas>
+    <div id="video-overlay">
+        <video id="intro-video" src="intro.mp4" playsinline muted></video>
+    </div>
+
+    <script>
+        let currentLang = 'es';
+        const translations = {
+            es: {
+                tagline: "Plataforma de Streaming Indie",
+                lblUsername: "NOMBRE DE USUARIO",
+                placeholder: "Ingresa tu nombre...",
+                lblAvatar: "SELECCIONA TU AVATAR",
+                btnStart: "Comenzar Experiencia",
+                langToggle: "Idioma: Inglés",
+                noContent: "sin contenido",
+                btnEntry: "Regístrate",
+                mHome: "Inicio",
+                mSeries: "Series",
+                mProfile: "Perfil",
+                mBrand: "Intropera",
+                rulesTitle: "Reglas de Intropera",
+                rule1: "Plataforma dedicada exclusivamente al contenido indie.",
+                rule2: "Los capítulos se presentan únicamente con el permiso explícito de los autores.",
+                rule3: "Queda estrictamente prohibida la publicación de material sin autorización.",
+                rule4: "Respeto absoluto a los derechos de autor y propiedad intelectual.",
+                creator: "creador: programador: DIEGO VGXX",
+                footer: "© 2026 INTROPERA todos los derechos reservados siguenos en nuestras redes oficiales.",
+                searchPlaceholder: "Buscar series...",
+                txtEnter: "Entrar",
+                btnLogout: "Eliminar Perfil",
+                newest: "Lo más nuevo"
+            },
+            en: {
+                tagline: "Indie Streaming Platform",
+                lblUsername: "USERNAME",
+                placeholder: "Enter your name...",
+                lblAvatar: "SELECT YOUR AVATAR",
+                btnStart: "Start Experience",
+                langToggle: "Language: Spanish",
+                noContent: "no content",
+                btnEntry: "Register",
+                mHome: "Home",
+                mSeries: "Series",
+                mProfile: "Profile",
+                mBrand: "Intropera",
+                rulesTitle: "Intropera Rules",
+                rule1: "Platform dedicated exclusively to indie content.",
+                rule2: "Chapters are presented only with explicit permission from authors.",
+                rule3: "Unauthorized publication of material is strictly prohibited.",
+                rule4: "Absolute respect for copyright and intellectual property.",
+                creator: "creator: programmer: DIEGO VGXX",
+                footer: "© 2026 INTROPERA all rights reserved follow us on our official networks.",
+                searchPlaceholder: "Search series...",
+                txtEnter: "Enter",
+                btnLogout: "Delete Profile",
+                newest: "Newest Content"
+            }
+        };
+
+        const seriesData = [
+            "Arcane: League of Legends",
+            "Better Call Saul",
+            "Cyberpunk: Edgerunners",
+            "Dark",
+            "Indie Animation Shorts",
+            "Love, Death & Robots",
+            "Mindhunter",
+            "Severance",
+            "Stranger Things",
+            "The Bear",
+            "The Boys",
+            "The Last of Us",
+            "The Sandman",
+            "Yellowjackets"
+        ];
+
+        function toggleSettings() {
+            document.getElementById('settings-menu').classList.toggle('active');
+        }
+
+        function changeLanguage() {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            const t = translations[currentLang];
+            document.getElementById('txt-tagline').textContent = t.tagline;
+            document.getElementById('lbl-username').textContent = t.lblUsername;
+            document.getElementById('profile-name').placeholder = t.placeholder;
+            document.getElementById('lbl-avatar').textContent = t.lblAvatar;
+            document.getElementById('btn-start').textContent = t.btnStart;
+            document.getElementById('txt-no-content').textContent = t.noContent;
+            document.getElementById('lang-toggle').textContent = t.langToggle;
+            document.getElementById('btn-entry').textContent = t.btnEntry;
+            document.getElementById('m-home').textContent = t.mHome;
+            document.getElementById('m-series').textContent = t.mSeries;
+            document.getElementById('m-profile').textContent = t.mProfile;
+            document.getElementById('m-brand').textContent = t.mBrand;
+            document.getElementById('rules-title').textContent = t.rulesTitle;
+            document.getElementById('rule-1').textContent = t.rule1;
+            document.getElementById('rule-2').textContent = t.rule2;
+            document.getElementById('rule-3').textContent = t.rule3;
+            document.getElementById('rule-4').textContent = t.rule4;
+            document.getElementById('creator-info').textContent = t.creator;
+            document.getElementById('txt-footer').textContent = t.footer;
+            document.getElementById('search-input').placeholder = t.searchPlaceholder;
+            document.getElementById('txt-enter').textContent = t.txtEnter;
+            document.getElementById('btn-logout').textContent = t.btnLogout;
+            document.getElementById('txt-newest').textContent = t.newest;
+            toggleSettings();
+        }
+
+        function filterSeries() {
+            const input = document.getElementById('search-input');
+            const results = document.getElementById('search-results');
+            const query = input.value.toLowerCase().trim();
+
+            results.innerHTML = '';
+            
+            if (query === '') {
+                results.classList.remove('active');
+                return;
+            }
+
+            const filtered = seriesData.filter(item => item.toLowerCase().includes(query));
+
+            if (filtered.length > 0) {
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'result-item';
+                    div.textContent = item;
+                    div.onclick = () => {
+                        input.value = item;
+                        results.classList.remove('active');
+                    };
+                    results.appendChild(div);
+                });
+                results.classList.add('active');
+            } else {
+                results.classList.remove('active');
+            }
+        }
+
+        function toggleSideMenu() {
+            document.getElementById('side-menu').classList.toggle('active');
+        }
+
+        function navigateTo(view) {
+            document.getElementById('default-content').style.display = view === 'home' ? 'block' : 'none';
+            document.getElementById('intropera-section').style.display = view === 'brand' ? 'block' : 'none';
+            
+            // Cerrar menú si está abierto
+            if (document.getElementById('side-menu').classList.contains('active')) {
+                toggleSideMenu();
+            }
+        }
+
+        function showRegistration() {
+            document.getElementById('entry-view').style.display = 'none';
+            document.getElementById('profile-view').style.display = 'block';
+        }
+
+        function selectAvatar(url, element) {
+            document.getElementById('preview-img').src = url;
+            document.querySelectorAll('.avatar-option').forEach(img => img.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('profile-name').value;
+            const avatarImg = document.getElementById('preview-img').src;
+            if (name.trim() !== "") {
+                localStorage.setItem('intropera_profile', JSON.stringify({ name: name, avatar: avatarImg }));
+                startTransition();
+            } else {
+                const errorMsg = currentLang === 'es' 
+                    ? "Por favor, ingresa un nombre para continuar." 
+                    : "Please enter a name to continue.";
+                alert(errorMsg);
+            }
+        }
+
+        function enterWithProfile() {
+            startTransition();
+        }
+
+        function startTransition() {
+            const overlay = document.getElementById('video-overlay');
+            const video = document.getElementById('intro-video');
+            
+            overlay.style.display = 'flex';
+            video.play();
+
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.getElementById('profile-view').style.display = 'none';
+                document.getElementById('entry-view').style.display = 'none';
+                document.getElementById('content-view').style.display = 'flex';
+                document.body.classList.add('content-active');
+                initParticles();
+            }, 3000);
+        }
+
+        function checkSavedProfile() {
+            const saved = localStorage.getItem('intropera_profile');
+            const registerUi = document.getElementById('register-ui');
+            const savedUi = document.getElementById('saved-profile-ui');
+
+            if (saved) {
+                const data = JSON.parse(saved);
+                registerUi.style.display = 'none';
+                savedUi.style.display = 'flex';
+                document.getElementById('saved-avatar-img').src = data.avatar;
+                document.getElementById('saved-name-text').textContent = data.name;
+            } else {
+                registerUi.style.display = 'block';
+                savedUi.style.display = 'none';
+            }
+        }
+
+        function clearProfile() {
+            localStorage.removeItem('intropera_profile');
+            checkSavedProfile();
+        }
+
+        function initParticles() {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.style.display = 'block';
+            let particles = [];
+            const count = 60;
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            for(let i=0; i<count; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 1,
+                    speed: Math.random() * 0.5 + 0.2,
+                    opacity: Math.random() * 0.4
+                });
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    ctx.fillStyle = `rgba(0, 229, 255, ${p.opacity})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    p.y += p.speed;
+                    if(p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // Cerrar resultados de búsqueda al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            const box = document.querySelector('.search-box');
+            if (box && !box.contains(e.target)) {
+                document.getElementById('search-results').classList.remove('active');
+            }
+        });
+
+        // Inicializar estado de perfil
+        checkSavedProfile();
+    </script>
+</body>
+</html>
