@@ -697,20 +697,20 @@
         /* Media Queries para Responsividad Total */
         @media (max-width: 600px) {
             .logo {
-                font-size: 10vw; /* Tamaño fluido basado en el ancho de la pantalla */
-                letter-spacing: 1.5vw;
-                margin-right: -1.5vw; /* Centrado perfecto garantizado */
+                font-size: 13vw; /* Logo mucho más grande */
+                letter-spacing: 1.8vw;
+                margin-right: -1.8vw; 
             }
 
             .tagline {
-                font-size: 0.9rem;
-                letter-spacing: 4px;
-                margin-top: 15px;
+                font-size: 1.2rem; /* Subtítulo más visible */
+                letter-spacing: 5px;
+                margin-top: 20px;
             }
 
             /* Reducir ligeramente el logo cuando el contenido está activo para dar espacio a la interfaz */
             body.content-active .logo {
-                font-size: 8vw;
+                font-size: 10vw;
                 letter-spacing: 8px;
                 margin-right: -8px;
             }
@@ -740,13 +740,24 @@
             }
 
             .start-circle {
-                width: 180px;
-                height: 180px;
-                font-size: 1rem;
+                width: 250px; /* Círculo de inicio masivo */
+                height: 250px;
+                font-size: 1.4rem;
             }
+
+            #saved-avatar-img {
+                width: 100px !important;
+                height: 100px !important;
+            }
+
+            #saved-name-text {
+                font-size: 1.2rem !important;
+                max-width: 200px !important;
+            }
+
             .avatar-option {
-                width: 55px;
-                height: 55px;
+                width: 70px; /* Opciones de avatar más grandes */
+                height: 70px;
             }
             .rules-container {
                 padding: 25px 15px;
@@ -763,9 +774,10 @@
                 height: 22px;
             }
             .section-title {
-                font-size: 2.2rem; /* Títulos de sección imponentes en móvil */
+                font-size: 3.2rem; /* Títulos de sección gigantes */
                 text-align: left; /* Cambiado a izquierda para permitir el desplazamiento por padding */
-                letter-spacing: 5px;
+                letter-spacing: 6px;
+                padding-left: 20px; /* Ajuste de margen para títulos grandes */
             }
             .rules-list li {
                 justify-content: center;
