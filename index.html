@@ -30,6 +30,7 @@
                 radial-gradient(circle at 50% -20%, rgba(0, 229, 255, 0.12), transparent 70%),
                 radial-gradient(circle at 90% 90%, rgba(0, 229, 255, 0.06), transparent 50%);
             overflow: hidden;
+            overflow-x: hidden;
         }
 
         /* Textura de grano sutil para evitar el negro plano */
@@ -50,13 +51,14 @@
             align-items: flex-start;
             padding: 40px 0 0 0;
             overflow-y: auto;
+            overflow-x: hidden;
         }
 
         body.content-active .container {
             max-width: 100%;
             box-sizing: border-box;
-            padding-left: 60px;
-            padding-right: 60px;
+            padding-left: 20px;
+            padding-right: 20px;
             transition: var(--transition);
             margin: 0 auto;
             display: flex;
@@ -231,15 +233,28 @@
 
         .avatar-options {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: nowrap;
+            gap: 15px;
             margin-top: 15px;
+            overflow-x: auto;
+            padding: 10px 5px 20px;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+            -webkit-overflow-scrolling: touch;
+            scroll-snap-type: x mandatory;
+        }
+
+        .avatar-options::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
         }
 
         .avatar-option {
+            flex-shrink: 0;
             width: 55px; height: 55px;
             border-radius: 50%; cursor: pointer;
             border: 2px solid rgba(255, 255, 255, 0.1);
             transition: var(--transition); object-fit: cover; opacity: 0.6;
+            scroll-snap-align: center;
         }
 
         .avatar-option:hover, .avatar-option.selected {
@@ -362,10 +377,14 @@
             display: flex;
             flex-direction: column;
             gap: 25px;
+            visibility: hidden;
+            pointer-events: none;
         }
 
         .side-menu.active {
             left: 0;
+            visibility: visible;
+            pointer-events: all;
         }
 
         .side-menu-item {
@@ -582,6 +601,68 @@
             opacity: 1;
             text-shadow: 0 0 10px var(--neon-turquoise);
         }
+
+        /* Media Queries para Responsividad Total */
+        @media (max-width: 600px) {
+            .logo {
+                font-size: 1.8rem;
+                letter-spacing: 6px;
+                margin-right: -6px;
+            }
+
+            .tagline {
+                font-size: 0.6rem;
+                letter-spacing: 2px;
+            }
+
+            .settings-container {
+                top: 20px;
+                right: 20px;
+            }
+
+            .main-menu-btn {
+                top: 20px;
+                left: 20px;
+            }
+
+            .side-menu {
+                width: 100%;
+                left: -100%;
+                padding: 100px 40px;
+            }
+
+            .card {
+                padding: 30px 20px;
+                margin: 0 10px;
+            }
+
+            .start-circle {
+                width: 150px;
+                height: 150px;
+                font-size: 0.8rem;
+            }
+
+            .avatar-option {
+                width: 45px;
+                height: 45px;
+            }
+
+            .rules-container {
+                padding: 25px 15px;
+                margin: 10px;
+            }
+
+            .search-box input {
+                padding: 14px 20px 14px 50px;
+                font-size: 0.95rem;
+            }
+
+            .search-icon {
+                left: 18px;
+                width: 18px;
+                height: 18px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -660,7 +741,7 @@
 
             <div class="card" id="profile-view" style="display: none;">
                 <div class="avatar-preview">
-                    <img id="preview-img" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=050505" alt="Avatar">
+                    <img id="preview-img" src="https://api.dicebear.com/7.x/shapes/svg?seed=1&backgroundColor=050505" alt="Avatar">
                 </div>
                 <div class="form-group">
                     <label for="profile-name" id="lbl-username">NOMBRE DE USUARIO</label>
@@ -669,10 +750,16 @@
                 <div class="form-group">
                     <label id="lbl-avatar">SELECCIONA TU AVATAR</label>
                     <div class="avatar-options">
-                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Masculino 1">
-                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=James&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Masculino 2">
-                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Aneka&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Femenino 1">
-                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Mimi&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Femenino 2">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=1&backgroundColor=050505" class="avatar-option selected" onclick="selectAvatar(this.src, this)" alt="Abstract 1">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=2&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 2">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=3&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 3">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=4&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 4">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=5&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 5">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=6&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 6">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=7&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 7">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=8&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 8">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=9&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 9">
+                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=10&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 10">
                     </div>
                 </div>
                 <button onclick="saveProfile()" id="btn-start">Comenzar Experiencia</button>
@@ -683,6 +770,16 @@
                 <div id="default-content">
                     <h2 class="section-title" id="txt-newest">Lo más nuevo</h2>
                     <div class="empty-state" id="txt-no-content">sin contenido</div>
+                </div>
+
+                <div id="profile-section" style="display: none;">
+                    <div class="card" style="max-width: 400px; margin: 20px auto;">
+                        <div class="avatar-preview">
+                            <img id="display-profile-img" src="" alt="Avatar" style="width: 110px; height: 110px; border-radius: 50%; border: 2px solid var(--neon-turquoise); padding: 5px; background: var(--bg-black);">
+                        </div>
+                        <h2 id="display-profile-name" style="font-family: 'Syncopate', sans-serif; color: var(--text-white); font-size: 1.2rem; margin-bottom: 30px; letter-spacing: 2px;"></h2>
+                        <button onclick="clearProfile()" style="background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); font-size: 0.8rem;" id="btn-delete-profile-main">Eliminar Perfil</button>
+                    </div>
                 </div>
 
                 <div id="intropera-section" style="display: none;">
@@ -821,6 +918,7 @@
             document.getElementById('search-input').placeholder = t.searchPlaceholder;
             document.getElementById('txt-enter').textContent = t.txtEnter;
             document.getElementById('btn-logout').textContent = t.btnLogout;
+            document.getElementById('btn-delete-profile-main').textContent = t.btnLogout;
             document.getElementById('txt-newest').textContent = t.newest;
             toggleSettings();
         }
@@ -863,6 +961,16 @@
         function navigateTo(view) {
             document.getElementById('default-content').style.display = view === 'home' ? 'block' : 'none';
             document.getElementById('intropera-section').style.display = view === 'brand' ? 'block' : 'none';
+            document.getElementById('profile-section').style.display = view === 'profile' ? 'block' : 'none';
+
+            if (view === 'profile') {
+                const saved = localStorage.getItem('intropera_profile');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    document.getElementById('display-profile-img').src = data.avatar;
+                    document.getElementById('display-profile-name').textContent = data.name;
+                }
+            }
             
             // Cerrar menú si está abierto
             if (document.getElementById('side-menu').classList.contains('active')) {
@@ -873,6 +981,12 @@
         function showRegistration() {
             document.getElementById('entry-view').style.display = 'none';
             document.getElementById('profile-view').style.display = 'block';
+            
+            // Limpiar datos previos para permitir una nueva registración "fresca"
+            document.getElementById('profile-name').value = '';
+            document.getElementById('preview-img').src = "https://api.dicebear.com/7.x/shapes/svg?seed=1&backgroundColor=050505";
+            document.querySelectorAll('.avatar-option').forEach(img => img.classList.remove('selected'));
+            if(document.querySelector('.avatar-option')) document.querySelector('.avatar-option').classList.add('selected');
         }
 
         function selectAvatar(url, element) {
@@ -935,6 +1049,16 @@
 
         function clearProfile() {
             localStorage.removeItem('intropera_profile');
+            
+            // Si el usuario está dentro de la plataforma, reiniciar al estado inicial
+            if (document.body.classList.contains('content-active')) {
+                document.body.classList.remove('content-active');
+                document.getElementById('content-view').style.display = 'none';
+                document.getElementById('entry-view').style.display = 'flex';
+                document.getElementById('particles-canvas').style.display = 'none';
+                navigateTo('home');
+            }
+
             checkSavedProfile();
         }
 
