@@ -176,6 +176,53 @@
             text-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
         }
 
+        /* Estilos de Portada Estilo Streaming */
+        .posters-grid {
+            display: flex;
+            justify-content: flex-start;
+            padding: 0 40px;
+            margin-bottom: 50px;
+        }
+
+        .poster-card {
+            width: 220px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .poster-card:hover {
+            transform: scale(1.05);
+        }
+
+        .poster-img-container {
+            width: 100%;
+            aspect-ratio: 2/3;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Recuadro delgado transparente */
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 15px;
+            padding: 5px; /* Crea el efecto de recuadro alrededor de la imagen */
+            box-sizing: border-box;
+        }
+
+        .poster-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px; /* Redondeado interno para encajar en el recuadro */
+        }
+
+        .poster-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-white);
+        }
+
         #app-content {
             display: flex;
             flex-direction: column;
@@ -185,6 +232,64 @@
         #content-view {
             flex: 1;
             flex-direction: column;
+        }
+
+        /* Pantalla de Catálogo/Detalles */
+        #catalog-view {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 1000px;
+            height: 85vh;
+            background: var(--bg-black);
+            z-index: 3000;
+            display: none;
+            flex-direction: column;
+            overflow-y: auto;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            box-shadow: 0 0 80px rgba(0, 0, 0, 0.9);
+        }
+
+        .catalog-banner-container {
+            width: 100%;
+            height: 45vh;
+            position: relative;
+        }
+
+        .catalog-banner-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+
+        .btn-back-catalog {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 229, 255, 0.5);
+            color: var(--neon-turquoise);
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: var(--transition);
+        }
+
+        .catalog-info {
+            padding: 30px 40px;
+        }
+
+        .catalog-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 10px;
         }
 
         .empty-state {
@@ -808,11 +913,41 @@
                 height: 22px;
             }
             .section-title {
-                font-size: 3.2rem; /* Títulos de sección gigantes */
+                font-size: 4rem; /* Títulos de sección masivos */
                 text-align: left; /* Cambiado a izquierda para permitir el desplazamiento por padding */
                 letter-spacing: 6px;
                 padding-left: 20px; /* Ajuste de margen para títulos grandes */
             }
+            
+            .posters-grid {
+                justify-content: center;
+                padding: 0 20px;
+            }
+
+            .poster-card {
+                width: 95%; /* Poster casi full width en móvil */
+            }
+
+            .poster-title {
+                font-size: 2.2rem; /* Título "LOOK AT!" enorme */
+                margin-top: 20px;
+            }
+
+            #catalog-view {
+                width: 98%; /* Modal del catálogo más grande en móvil */
+                height: 90vh;
+                border-radius: 20px;
+            }
+
+            .catalog-banner-container {
+                height: 35vh;
+            }
+
+            .catalog-meta {
+                font-size: 1.5rem; /* Metadatos grandes y claros */
+                text-align: center;
+            }
+
             .rules-list li {
                 justify-content: center;
             }
@@ -926,7 +1061,14 @@
             <div id="content-view" style="display: none;">
                 <div id="default-content">
                     <h2 class="section-title" id="txt-newest">Lo más nuevo</h2>
-                    <div class="empty-state" id="txt-no-content">sin contenido</div>
+                    <div class="posters-grid">
+                        <div class="poster-card" onclick="openMovieCatalog()">
+                            <div class="poster-img-container">
+                                <img src="portada.png" alt="Cover">
+                            </div>
+                            <div class="poster-title">LOOK AT!</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="profile-section" style="display: none;">
@@ -966,6 +1108,20 @@
                     </a>
                 </footer>
             </div>
+        </div>
+    </div>
+
+    <!-- Vista de Catálogo -->
+    <div id="catalog-view">
+        <div class="catalog-banner-container">
+            <img src="portada.png" alt="Banner">
+            <div class="btn-back-catalog" onclick="closeMovieCatalog()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            </div>
+        </div>
+        <div class="catalog-info">
+            <h1 class="section-title" style="padding-left: 0; margin-top: 0;">LOOK AT!</h1>
+            <p class="catalog-meta">16+ - 2026- FANTASIA</p>
         </div>
     </div>
 
@@ -1117,6 +1273,14 @@
             } else {
                 results.classList.remove('active');
             }
+        }
+
+        function openMovieCatalog() {
+            document.getElementById('catalog-view').style.display = 'flex';
+        }
+
+        function closeMovieCatalog() {
+            document.getElementById('catalog-view').style.display = 'none';
         }
 
         function toggleSideMenu() {
