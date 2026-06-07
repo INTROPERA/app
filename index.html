@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>INTROPERA</title>
     <!-- Importación de fuentes: Montserrat para el cuerpo y Syncopate para el logo -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
@@ -23,7 +23,8 @@
             margin: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* Posiciona el contenido arriba */
+            padding-top: 10vh; /* Espacio desde el tope superior */
             min-height: 100vh;
             /* Luces ambientales que dan profundidad al fondo */
             background-image: 
@@ -68,7 +69,7 @@
 
         .container {
             width: 100%;
-            max-width: 420px;
+            max-width: 600px; /* Aumentado para permitir un logo más grande */
             padding: 20px;
             position: relative;
             z-index: 1;
@@ -81,14 +82,16 @@
 
         .logo {
             font-family: 'Syncopate', sans-serif;
-            font-size: 2.8rem;
+            font-size: 4.2rem; /* Aumentado para mayor impacto */
             font-weight: 700;
-            letter-spacing: 12px;
+            letter-spacing: 16px;
             margin: 0;
             display: inline-block;
-            margin-right: -12px; /* Compensa el letter-spacing para un centrado perfecto */
+            margin-right: -16px; /* Compensa exactamente el letter-spacing para un centrado matemático */
+            white-space: nowrap; /* Evita que el título se parta en dos líneas */
             text-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
             color: var(--text-white);
+            transition: var(--transition);
         }
 
         .tagline {
@@ -163,11 +166,12 @@
         .section-title {
             font-family: 'Syncopate', sans-serif;
             color: var(--neon-turquoise);
-            font-size: 1.2rem;
+            font-size: 1.8rem; /* Títulos de sección más grandes */
             text-transform: uppercase;
             letter-spacing: 4px;
             margin: 40px 0 20px;
             text-align: left;
+            padding-left: 40px; /* Desplazado a la derecha para no estar pegado al borde */
             opacity: 0.9;
             text-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
         }
@@ -201,6 +205,8 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
             text-align: center;
+            max-width: 420px; /* Mantiene el formulario compacto */
+            margin: 0 auto;
         }
 
         .avatar-preview { margin-bottom: 30px; }
@@ -280,18 +286,80 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: black;
+            background-color: var(--bg-black);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.1), transparent 80%),
+                radial-gradient(circle at 10% 10%, rgba(0, 229, 255, 0.05), transparent 40%);
             z-index: 2000;
             display: none;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
+
+        /* Efecto de Scanlines/CRT sobre la transición */
+        .overlay-scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            z-index: 2001;
+        }
+
         #video-overlay video {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            border-radius: 12px;
-            box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Mantiene la integridad del logo */
+            position: relative;
+            z-index: 1999;
+            filter: brightness(1.1) contrast(1.1);
+        }
+
+        /* Loader de transición */
+        .transition-loader {
+            position: absolute;
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 250px;
+            text-align: center;
+            z-index: 2002;
+        }
+
+        .loader-text {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.6rem;
+            color: var(--neon-turquoise);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--neon-turquoise);
+            animation: pulse-loader 1.5s infinite;
+        }
+
+        .loader-bar-bg {
+            width: 100%;
+            height: 2px;
+            background: rgba(0, 229, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loader-bar-fill {
+            position: absolute;
+            top: 0; left: 0; height: 100%;
+            width: 0%;
+            background: var(--neon-turquoise);
+            box-shadow: 0 0 15px var(--neon-turquoise);
+            transition: width 3s linear;
+        }
+
+        @keyframes pulse-loader {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         #particles-canvas {
@@ -438,7 +506,7 @@
         .rules-container h2 {
             font-family: 'Syncopate', sans-serif;
             color: var(--neon-turquoise);
-            font-size: 1.1rem;
+            font-size: 1.6rem; /* Título de reglas más grande */
             margin-bottom: 25px;
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -602,19 +670,51 @@
             text-shadow: 0 0 10px var(--neon-turquoise);
         }
 
+        /* Estilos del Banner de Video (Segunda Pantalla) */
+        .video-banner-container {
+            display: none;
+            width: 95%;
+            max-width: 900px; /* Más alargado */
+            margin: 30px auto;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            box-shadow: 0 0 50px rgba(0, 229, 255, 0.2);
+            background: black;
+        }
+
+        body.content-active .video-banner-container {
+            display: block;
+        }
+
+        .video-banner-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0.6; /* Transparencia solicitada */
+        }
+
         /* Media Queries para Responsividad Total */
         @media (max-width: 600px) {
             .logo {
-                font-size: 2.2rem;
+                font-size: 10vw; /* Tamaño fluido basado en el ancho de la pantalla */
+                letter-spacing: 1.5vw;
+                margin-right: -1.5vw; /* Centrado perfecto garantizado */
+            }
+
+            .tagline {
+                font-size: 0.9rem;
+                letter-spacing: 4px;
+                margin-top: 15px;
+            }
+
+            /* Reducir ligeramente el logo cuando el contenido está activo para dar espacio a la interfaz */
+            body.content-active .logo {
+                font-size: 8vw;
                 letter-spacing: 8px;
                 margin-right: -8px;
             }
 
-            .tagline {
-                font-size: 0.65rem;
-                letter-spacing: 3px;
-                margin-top: 15px;
-            }
             .settings-container {
                 top: 20px;
                 right: 20px;
@@ -633,32 +733,42 @@
                 padding: 100px 40px;
             }
             .card {
-                padding: 40px 25px;
+                padding: 50px 30px;
                 width: 100%;
                 margin: 0 10px;
+                text-align: center;
             }
 
             .start-circle {
-                width: 150px;
-                height: 150px;
-                font-size: 0.8rem;
+                width: 180px;
+                height: 180px;
+                font-size: 1rem;
             }
             .avatar-option {
-                width: 45px;
-                height: 45px;
+                width: 55px;
+                height: 55px;
             }
             .rules-container {
                 padding: 25px 15px;
                 margin: 10px;
+                text-align: center;
             }
             .search-box input {
-                padding: 16px 20px 16px 55px;
-                font-size: 1rem;
+                padding: 18px 20px 18px 55px;
+                font-size: 1.1rem;
             }
             .search-icon {
                 left: 20px;
-                width: 20px;
-                height: 20px;
+                width: 22px;
+                height: 22px;
+            }
+            .section-title {
+                font-size: 2.2rem; /* Títulos de sección imponentes en móvil */
+                text-align: left; /* Cambiado a izquierda para permitir el desplazamiento por padding */
+                letter-spacing: 5px;
+            }
+            .rules-list li {
+                justify-content: center;
             }
         }
     </style>
@@ -714,6 +824,9 @@
             <h1 class="logo">INTROPERA</h1>
             <div class="divider"></div>
             <p class="tagline" id="txt-tagline">Plataforma de Streaming Indie</p>
+            <div class="video-banner-container">
+                <video id="banner-video" src="intro.mp4" autoplay loop muted playsinline></video>
+            </div>
             <div class="search-box">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input type="text" id="search-input" placeholder="Buscar series..." oninput="filterSeries()" autocomplete="off">
@@ -813,6 +926,11 @@
     <canvas id="particles-canvas"></canvas>
     <div id="video-overlay">
         <video id="intro-video" src="intro.mp4" playsinline muted></video>
+        <div class="overlay-scanlines"></div>
+        <div class="transition-loader">
+            <div class="loader-text" id="txt-loading">Iniciando sistema...</div>
+            <div class="loader-bar-bg"><div class="loader-bar-fill" id="loader-fill"></div></div>
+        </div>
     </div>
 
     <script>
@@ -841,6 +959,7 @@
                 searchPlaceholder: "Buscar series...",
                 txtEnter: "Entrar",
                 btnLogout: "Eliminar Perfil",
+                txtLoading: "Iniciando sistema...",
                 newest: "Lo más nuevo"
             },
             en: {
@@ -866,6 +985,7 @@
                 searchPlaceholder: "Search series...",
                 txtEnter: "Enter",
                 btnLogout: "Delete Profile",
+                txtLoading: "Starting system...",
                 newest: "Newest Content"
             }
         };
@@ -915,6 +1035,7 @@
             document.getElementById('txt-footer').textContent = t.footer;
             document.getElementById('search-input').placeholder = t.searchPlaceholder;
             document.getElementById('txt-enter').textContent = t.txtEnter;
+            document.getElementById('txt-loading').textContent = t.txtLoading;
             document.getElementById('btn-logout').textContent = t.btnLogout;
             document.getElementById('btn-delete-profile-main').textContent = t.btnLogout;
             document.getElementById('txt-newest').textContent = t.newest;
@@ -1014,9 +1135,20 @@
         function startTransition() {
             const overlay = document.getElementById('video-overlay');
             const video = document.getElementById('intro-video');
+            const loader = document.getElementById('loader-fill');
             
+            // Resetear loader y video
+            loader.style.transition = 'none';
+            loader.style.width = '0%';
             overlay.style.display = 'flex';
+            video.currentTime = 0;
             video.play();
+
+            // Iniciar animación de barra
+            setTimeout(() => {
+                loader.style.transition = 'width 3s linear';
+                loader.style.width = '100%';
+            }, 50);
 
             setTimeout(() => {
                 overlay.style.display = 'none';
@@ -1107,8 +1239,13 @@
             }
         });
 
-        // Inicializar estado de perfil
+        // Inicializar estado de perfil y configuración de video
         checkSavedProfile();
+        
+        // Ajustar velocidad del video banner para que sea más estético y lento
+        window.addEventListener('load', () => {
+            document.getElementById('banner-video').playbackRate = 0.75;
+        });
     </script>
 </body>
 </html>
