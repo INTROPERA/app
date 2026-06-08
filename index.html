@@ -37,7 +37,11 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #050505 100%);
+            background: 
+                linear-gradient(to bottom, rgba(0, 242, 255, 0.3) 0%, rgba(0, 242, 255, 0.1) 40%, transparent 90%),
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 255, 0.05) 0%, transparent 35%),
+                radial-gradient(circle at 85% 85%, rgba(0, 242, 255, 0.05) 0%, transparent 35%),
+                radial-gradient(circle at 50% 50%, #0a0a0a 0%, #050505 100%);
             background-attachment: fixed;
         }
 
@@ -45,10 +49,26 @@
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
+            background-image: 
+                linear-gradient(rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 242, 255, 0.02) 1px, transparent 1px),
+                radial-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 40px 40px;
             pointer-events: none;
             z-index: -1;
+            animation: backgroundMove 120s linear infinite;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%),
+                radial-gradient(circle, transparent 40%, rgba(0, 0, 0, 0.4) 100%);
+            background-size: 100% 4px, 100% 100%;
+            pointer-events: none;
+            z-index: 1000;
         }
 
         /* Utilidades */
@@ -66,15 +86,15 @@
         .menu-card {
             background: rgba(15, 15, 15, 0.75);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 5rem 3rem;
+            padding: 3rem 2rem;
             border-radius: 2.5rem;
             width: 100%;
             backdrop-filter: blur(25px);
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
             border-top: 1px solid var(--neon-turquoise);
             margin-top: -10rem;
-            animation: fadeIn 0.8s ease-out;
-            min-height: 80vh;
+            animation: fadeIn 0.4s ease-out;
+            min-height: 60vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -91,7 +111,8 @@
             text-shadow: var(--white-glow);
             margin-bottom: 0.5rem;
             text-transform: uppercase;
-            margin-left: 1rem; /* Lo desplaza un poco más hacia la izquierda */
+            margin-left: -6rem; /* Lo desplaza un poco más hacia la izquierda */
+            animation: fadeIn 0.4s ease-out;
         }
 
         .divider {
@@ -125,7 +146,7 @@
         /* --- Formulario de Creación --- */
         #profile-form {
             width: 100%;
-            animation: fadeIn 0.5s ease forwards;
+            animation: fadeIn 0.3s ease forwards;
         }
 
         .avatar-scroll {
@@ -175,7 +196,7 @@
             color: white;
             border-radius: 0.8rem;
             margin-bottom: 2rem;
-            font-size: 20px; /* Tamaño mayor para mejor legibilidad y evitar zoom en iOS */
+            font-size: 22px; /* Tamaño mayor para mejor legibilidad y evitar zoom en iOS */
             outline: none;
             height: 70px; /* Aumentado para acomodar el texto de 20px */
             padding: 0 1.5rem;
@@ -183,6 +204,61 @@
 
         input[type="text"]:focus {
             border-color: var(--neon-turquoise);
+        }
+
+        /* Botón de Idioma */
+        .lang-toggle {
+            position: fixed;
+            top: 2.5rem;
+            right: 2.5rem;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.8rem;
+        }
+        .lang-icon {
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .lang-icon:hover { transform: rotate(90deg); }
+        .lang-icon svg {
+            width: 3.5rem;
+            height: 3.5rem;
+            fill: var(--neon-turquoise);
+            filter: drop-shadow(var(--neon-glow));
+        }
+        .lang-menu {
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid var(--neon-turquoise);
+            border-radius: 0.8rem;
+            padding: 0.4rem;
+            box-shadow: var(--neon-glow);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.2s ease-out;
+        }
+        .lang-menu button {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+        .lang-menu button:hover { color: var(--neon-turquoise); }
+
+        #particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 150;
         }
 
         .btn-start {
@@ -209,16 +285,65 @@
         #loading-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
+            background: radial-gradient(circle at center, #0a0a0a 0%, #000 100%);
             z-index: 100;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
+        }
+
+        .loading-header {
+            position: absolute;
+            top: 10vh;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            width: 100%;
+        }
+
+        .logo-mini {
+            font-size: 1.8rem;
+            letter-spacing: 2rem;
+            margin-right: -2rem; /* Compensa el espacio final para centrar perfecto */
+            color: #fff;
+            opacity: 0.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .video-banner-container {
+            width: 100%;
+            height: 350px;
+            overflow: hidden;
+            position: relative;
+            border-top: 1px solid rgba(0, 242, 255, 0.2);
+            border-bottom: 1px solid rgba(0, 242, 255, 0.2);
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         #intro-video {
-            width: 95%;
-            max-width: 1200px;
-            margin-bottom: 2rem;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        /* Partículas */
+        .particle {
+            position: absolute;
+            background: var(--neon-turquoise);
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 1;
+            filter: blur(1px);
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            from { transform: translateY(-10vh) translateX(0); }
+            to { transform: translateY(110vh) translateX(20px); }
         }
 
         .progress-container {
@@ -237,11 +362,11 @@
             height: 100%;
             background: var(--neon-turquoise);
             box-shadow: var(--neon-glow);
-            animation: load 2.5s ease-in-out forwards;
+            animation: load 1.5s ease-in-out forwards;
         }
 
         .status-text {
-            font-size: 0.8rem;
+            font-size: 0.10rem;
             letter-spacing: 3px;
             color: var(--neon-turquoise);
             margin-top: 1rem;
@@ -259,6 +384,30 @@
             -webkit-overflow-scrolling: touch;
         }
 
+        #main-app .logo {
+            text-align: center;
+            margin-left: 0;
+            margin-right: -3rem; /* Compensa el letter-spacing para un centrado perfecto */
+            animation: slideInRight 0.3s ease-out forwards;
+        }
+
+        #main-app .video-banner-container {
+            margin: 0 0 2rem;
+            height: 300px;
+            animation: slideInRight 0.3s ease-out 0.15s both;
+        }
+
+        #main-app .video-banner-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+        }
+
+        #main-app .divider {
+            animation: slideInRight 0.3s ease-out 0.05s both;
+        }
+
         .subtitle {
             font-size: 1.5rem;
             color: var(--neon-turquoise);
@@ -267,30 +416,42 @@
             text-transform: uppercase;
             margin-top: 0;
             margin-bottom: 3rem;
+            animation: fadeIn 0.5s ease-out 0.2s both;
+        }
+
+        #main-app .subtitle {
+            animation: slideInRight 0.3s ease-out 0.1s both;
+            margin-bottom: 2rem;
         }
 
         .welcome-msg { margin-top: 2rem; color: var(--neon-turquoise); }
+        #main-app .welcome-msg { animation: slideInRight 0.3s ease-out 0.2s both; }
 
         /* Animaciones */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes backgroundMove {
+            from { background-position: 0 0, 0 0, 0 0; }
+            to { background-position: 0 1000px, 1000px 0, 0 500px; }
         }
 
         /* Responsivo */
         @media (max-width: 600px) {
             #profile-selection { padding: 0.8rem; max-width: 100%; display: flex; flex-direction: column; justify-content: center; height: 100%; }
             h1.logo { font-size: 6rem; letter-spacing: 0.3rem; text-align: center; margin-left: 0; margin-top: 0; margin-bottom: 0; }
+            #main-app .logo { margin-right: -0.3rem; }
             .divider { margin-bottom: 1.2rem; margin-top: 0.8rem; }
             .subtitle { font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 2.5rem; font-weight: 300; }
             .btn-start { width: 100%; height: 90px; font-size: 1.6rem; border-radius: 1.2rem; }
             .menu-card { 
-                padding: 5rem 1.8rem; 
+                padding: 2rem 1.2rem; 
                 border-radius: 1.5rem; 
                 margin-top: -8rem;
-                min-height: 90vh;
+                min-height: auto;
             }
             .profile-add-circle { width: 18rem; height: 18rem; font-size: 8rem; }
             .avatar-scroll { gap: 2rem; margin: 2rem 0; }
@@ -300,6 +461,18 @@
     </style>
 </head>
 <body>
+    <div id="particle-container"></div>
+    
+    <div id="lang-control" class="lang-toggle">
+        <div class="lang-icon" onclick="toggleLangMenu()">
+            <svg viewBox="0 0 24 24">
+                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+            </svg>
+        </div>
+        <div id="lang-menu" class="lang-menu hidden">
+            <button id="btn-lang-toggle" onclick="toggleLanguage()">English</button>
+        </div>
+    </div>
 
     <!-- PANTALLA 1: SELECCIÓN / CREACIÓN -->
     <section id="profile-selection">
@@ -309,7 +482,7 @@
         
         <div id="initial-view">
             <div class="profile-add-circle flex-center" onclick="showForm()">+</div>
-            <p>Añadir Perfil</p>
+            <p id="txt-add-profile">Añadir Perfil</p>
         </div>
 
         <div id="profile-form" class="hidden menu-card">
@@ -326,7 +499,13 @@
 
     <!-- PANTALLA 2: TRANSICIÓN -->
     <section id="loading-screen" class="hidden flex-center">
-        <video id="intro-video" src="intro.mp4" muted playsinline></video>
+        <div class="loading-header">
+            <div class="logo-mini">INTROPERA</div>
+            <div class="divider" style="max-width: 200px; opacity: 0.2; margin: 0 auto;"></div>
+        </div>
+        <div class="video-banner-container">
+            <video id="intro-video" src="intro.mp4" muted playsinline loop></video>
+        </div>
         <div class="progress-container">
             <div class="progress-bar"></div>
         </div>
@@ -339,6 +518,10 @@
         <div class="divider"></div>
         <p class="subtitle">plataforma de streaming de series indie</p>
         
+        <div class="video-banner-container">
+            <video src="intro.mp4" autoplay muted playsinline loop></video>
+        </div>
+
         <div class="welcome-msg" id="welcome-user"></div>
         
         <!-- Aquí iría el contenido de las series -->
@@ -362,6 +545,28 @@
         ];
 
         let selectedAvatarIndex = 0;
+        let currentLang = 'es';
+
+        const translations = {
+            es: {
+                subtitle: "plataforma de streaming de series indie",
+                addProfile: "Añadir Perfil",
+                pickAvatar: "Escoge tu avatar",
+                placeholder: "Tu nombre...",
+                btnStart: "Comenzar Experiencia",
+                status: "Iniciando Sistema...",
+                welcome: "Bienvenido de vuelta, "
+            },
+            en: {
+                subtitle: "indie series streaming platform",
+                addProfile: "Add Profile",
+                pickAvatar: "Choose your avatar",
+                placeholder: "Your name...",
+                btnStart: "Start Experience",
+                status: "Starting System...",
+                welcome: "Welcome back, "
+            }
+        };
 
         // Renderizar lista de avatars
         const avatarList = document.getElementById('avatar-list');
@@ -376,6 +581,48 @@
             };
             avatarList.appendChild(div);
         });
+
+        function toggleLangMenu() {
+            document.getElementById('lang-menu').classList.toggle('hidden');
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'es' ? 'en' : 'es';
+            const btn = document.getElementById('btn-lang-toggle');
+            if (btn) btn.innerText = currentLang === 'es' ? 'English' : 'Español';
+            toggleLangMenu();
+            updateUI();
+        }
+
+        function updateUI() {
+            const t = translations[currentLang];
+            document.querySelectorAll('.subtitle').forEach(el => el.innerText = t.subtitle);
+            document.getElementById('txt-add-profile').innerText = t.addProfile;
+            const pickAvatarTxt = document.querySelector('#profile-form p');
+            if(pickAvatarTxt) pickAvatarTxt.innerText = t.pickAvatar;
+            document.getElementById('username').placeholder = t.placeholder;
+            document.querySelector('.btn-start').innerText = t.btnStart;
+            document.querySelector('.status-text').innerText = t.status;
+            
+            const welcome = document.getElementById('welcome-user');
+            if(welcome.innerText) {
+                const profile = JSON.parse(localStorage.getItem('intropera_profile'));
+                welcome.innerText = `${t.welcome}${profile.name}`;
+            }
+        }
+
+        function createParticles() {
+            const container = document.getElementById('particle-container');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.width = p.style.height = Math.random() * 3 + 1 + 'px';
+                p.style.animationDuration = Math.random() * 5 + 7 + 's'; // Más lento
+                p.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(p);
+            }
+        }
 
         function showForm() {
             document.getElementById('initial-view').classList.add('hidden');
@@ -399,6 +646,7 @@
             // Iniciar Transición
             document.getElementById('profile-selection').classList.add('hidden');
             document.getElementById('loading-screen').classList.remove('hidden');
+            document.getElementById('lang-control').classList.add('hidden');
 
             // Reproducir video de introducción
             const video = document.getElementById('intro-video');
@@ -407,13 +655,16 @@
             // Simular carga y mostrar app principal
             setTimeout(() => {
                 showMainApp(profile);
-            }, 3000); // 3 segundos de "video/carga"
+            }, 1800); // Reducido para coincidir con la barra más rápida
         }
 
         function showMainApp(profile) {
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('welcome-user').innerText = `Bienvenido de vuelta, ${profile.name}`;
+            document.getElementById('lang-control').classList.remove('hidden');
+            const t = translations[currentLang];
+            document.getElementById('welcome-user').innerText = `${t.welcome}${profile.name}`;
+            createParticles();
         }
 
         // Comprobar si ya existe perfil al cargar
