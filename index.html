@@ -25,16 +25,18 @@
             font-size: 16px; /* Base para rem */
             background-color: var(--bg-color);
             color: var(--text-color);
+            touch-action: none; /* Bloquea gestos del navegador */
+            overflow: hidden;
         }
 
         body {
             width: 100%;
-            min-height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
+            overflow: hidden;
             background: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #050505 100%);
             background-attachment: fixed;
         }
@@ -243,8 +245,11 @@
         /* --- Plataforma Principal --- */
         #main-app {
             width: 100%;
-            padding: 2rem;
+            height: 100dvh;
+            padding: 2rem 1rem;
             text-align: center;
+            overflow-y: auto; /* Permite scroll solo en el catálogo */
+            -webkit-overflow-scrolling: touch;
         }
 
         .subtitle {
@@ -269,17 +274,20 @@
 
         /* Responsivo */
         @media (max-width: 600px) {
-            #profile-selection { padding: 0.5rem; max-width: 100%; }
-            h1.logo { font-size: 3.5rem; letter-spacing: 0.8rem; text-align: center; margin-left: 0; margin-top: 2rem; }
-            .divider { margin-bottom: 1.5rem; }
-            .subtitle { font-size: 0.8rem; letter-spacing: 2px; }
-            .btn-start { width: 100%; height: 65px; font-size: 1rem; }
+            #profile-selection { padding: 0.8rem; max-width: 100%; display: flex; flex-direction: column; justify-content: center; height: 100%; }
+            h1.logo { font-size: 4.8rem; letter-spacing: 0.3rem; text-align: center; margin-left: 0; margin-top: 0; margin-bottom: 0; }
+            .divider { margin-bottom: 1.2rem; margin-top: 0.8rem; }
+            .subtitle { font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 2.5rem; font-weight: 300; }
+            .btn-start { width: 100%; height: 90px; font-size: 1.6rem; border-radius: 1.2rem; }
             .menu-card { 
-                padding: 2.5rem 1.5rem; 
+                padding: 3rem 1.8rem; 
                 border-radius: 1.5rem; 
                 margin-top: 0;
             }
-            .profile-add-circle { width: 10rem; height: 10rem; font-size: 4rem; }
+            .profile-add-circle { width: 14rem; height: 14rem; font-size: 6rem; }
+            .avatar-scroll { gap: 2rem; margin: 2rem 0; }
+            .avatar-option { min-width: 8rem; height: 8rem; }
+            input[type="text"] { font-size: 26px; height: 95px; margin-bottom: 2rem; border-radius: 1.2rem; }
         }
     </style>
 </head>
@@ -410,6 +418,19 @@
                 console.log("Perfil detectado:", profile.name);
             }
         };
+
+        // BLOQUEO DE ZOOM MANUAL (HARD LOCK)
+        // Previene el zoom de dos dedos (pinch-to-zoom)
+        document.addEventListener('touchstart', function (event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+
+        // Previene el zoom por gestos en navegadores basados en WebKit (iOS)
+        document.addEventListener('gesturestart', function (event) {
+            event.preventDefault();
+        });
     </script>
 </body>
 </html>
