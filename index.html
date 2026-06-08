@@ -3,1573 +3,403 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INTROPERA</title>
-    <!-- Importación de fuentes: Montserrat para el cuerpo y Syncopate para el logo -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <title>INTROPERA - Streaming Indie</title>
     <style>
-        * {
-            box-sizing: border-box;
+        :root {
+            --bg-color: #050505;
+            --neon-turquoise: #00f2ff;
+            --neon-glow: 0 0 10px rgba(0, 242, 255, 0.7), 0 0 20px rgba(0, 242, 255, 0.4);
+            --white-glow: 0 0 15px rgba(255, 255, 255, 0.3);
+            --text-color: #ffffff;
+            --transition-speed: 0.5s;
         }
 
-        :root {
-            --neon-turquoise: #00e5ff;
-            --bg-black: #050505;
-            --card-bg: rgba(18, 18, 18, 0.8);
-            --text-white: #ffffff;
-            --text-muted: #888888;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         html {
-            font-size: 100%; /* Respeta la configuración del usuario */
+            font-size: 16px; /* Base para rem */
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
 
         body {
-            background-color: var(--bg-black);
-            color: var(--text-white);
-            font-family: 'Montserrat', sans-serif;
-            margin: 0;
-            font-size: 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start; /* Posiciona el contenido arriba */
-            padding-top: 10vh; /* Espacio desde el tope superior */
+            width: 100%;
             min-height: 100vh;
-            /* Luces ambientales que dan profundidad al fondo */
-            background-image: 
-                radial-gradient(circle at 50% -20%, rgba(0, 229, 255, 0.12), transparent 70%),
-                radial-gradient(circle at 90% 90%, rgba(0, 229, 255, 0.06), transparent 50%);
-            overflow-x: hidden; /* Evita scroll horizontal accidental */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            background: radial-gradient(circle at 50% 50%, #333 0%, #050505 100%);
+            background-attachment: fixed;
         }
 
-        /* Textura de grano sutil para evitar el negro plano */
         body::before {
             content: "";
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.04;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
             pointer-events: none;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Y%3Cfilter id='noiseFilter'%3Y%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3Y%3C/filter%3Y%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3Y%3C/svg%3Y");
-            z-index: 0;
+            z-index: -1;
         }
 
-        body.content-active {
-            align-items: flex-start;
-            padding: 40px 0 0 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
+        /* Utilidades */
+        .hidden { display: none !important; }
+        .flex-center { display: flex; justify-content: center; align-items: center; }
 
-        body.content-active .container {
+        /* --- Pantalla de Selección de Perfil --- */
+        #profile-selection {
             width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            padding-left: 1rem;
-            padding-right: 1rem;
-            transition: var(--transition);
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            min-height: calc(100vh - 2.5rem);
-        }
-
-        .container {
-            width: 100%; /* Asegura el 100% del ancho disponible */
-            max-width: 100%;
-            padding: 1.25rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        header {
+            max-width: 600px;
+            padding: 2rem;
             text-align: center;
-            margin-bottom: 40px;
         }
 
-        .logo {
-            font-family: 'Syncopate', sans-serif;
-            font-size: clamp(2rem, 10vw, 4.2rem); /* Fluido entre 2rem y 4.2rem */
-            font-weight: 700;
-            letter-spacing: 0.5em; /* Usamos em para que sea relativo al tamaño de fuente */
-            margin: 0;
-            display: inline-block;
-            white-space: nowrap; /* Evita que el título se parta en dos líneas */
-            margin-right: -0.5em;
-            white-space: normal; /* Permitir que baje si es necesario en pantallas muy pequeñas */
-            word-break: break-all;
-            text-shadow: 0 0 25px rgba(0, 229, 255, 0.4);
-            color: var(--text-white);
-            transition: var(--transition);
+        .menu-card {
+            background: rgba(15, 15, 15, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 3.5rem 2.5rem;
+            border-radius: 2rem;
+            width: 100%;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+            border-top: 1px solid var(--neon-turquoise);
+            margin-top: 1rem;
+            animation: fadeIn 0.8s ease-out;
         }
 
-        .tagline {
-            color: var(--neon-turquoise);
-            font-size: 0.75rem;
+        h1.logo {
+            font-size: 5rem;
+            letter-spacing: 2.5rem;
+            width: 100%;
+            text-align: left;
+            color: #ffffff;
+            text-shadow: var(--white-glow);
+            margin-bottom: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.25rem;
-            margin-top: 0.625rem;
-            opacity: 0.8;
+            margin-left: -5rem; /* Lo desplaza un poco más hacia la izquierda */
         }
 
         .divider {
+            width: 100%;
+            max-width: 500px;
             height: 1px;
-            width: 100%; /* Renglón que ocupa todo el ancho para mejor centrado */
-            background: linear-gradient(90deg, transparent, #e0f7fa, transparent);
-            margin: 1.25rem auto;
+            background: linear-gradient(90deg, transparent, #ffffff, transparent);
+            margin: 1rem auto 2rem;
             opacity: 0.5;
         }
 
-        .settings-container {
-            position: fixed;
-            top: 1.875rem;
-            right: 1.875rem;
-            z-index: 100;
-        }
-
-        .settings-btn {
-            color: var(--neon-turquoise);
+        .profile-add-circle {
+            width: 8rem;
+            height: 8rem;
+            border: 2px dashed var(--neon-turquoise);
+            border-radius: 50%;
+            margin: 0 auto 2rem;
             cursor: pointer;
-            opacity: 0.6;
-            transition: var(--transition);
-        }
-
-        .settings-menu {
-            position: absolute;
-            top: 2.5rem;
-            right: 0;
-            background: var(--card-bg);
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            border-radius: 0.75rem;
-            padding: 0.5rem 0;
-            min-width: 10.625rem;
-            display: none;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-        }
-
-        .settings-menu.active {
-            display: block;
-        }
-
-        .menu-item {
-            padding: 0.938rem 1.563rem;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        .menu-item:hover {
-            background: rgba(0, 229, 255, 0.1);
+            transition: all 0.3s ease;
+            font-size: 3rem;
             color: var(--neon-turquoise);
+            animation: float 3s ease-in-out infinite;
         }
 
-        .settings-btn:hover {
-            opacity: 1;
-            transform: rotate(90deg);
-            filter: drop-shadow(0 0 8px var(--neon-turquoise));
-        }
-
-        .section-title {
-            font-family: 'Syncopate', sans-serif;
-            color: var(--neon-turquoise);
-            font-size: 1.8rem; /* Títulos de sección más grandes */
-            text-transform: uppercase;
-            letter-spacing: 0.25rem;
-            margin: 2.5rem 0 1.25rem;
-            text-align: left;
-            padding-left: 2.5rem; /* Desplazado a la derecha para no estar pegado al borde */
-            opacity: 0.9;
-            text-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
-        }
-
-        /* Estilos de Portada Estilo Streaming */
-        .posters-grid {
-            display: flex;
-            flex-wrap: wrap; /* Importante para que no desborde horizontalmente */
-            gap: 1.25rem;
-            justify-content: flex-start;
-            padding: 0 2.5rem;
-            margin-bottom: 3.125rem;
-        }
-
-        .poster-card {
-            width: 100%;
-            flex: 1 1 13.75rem; /* Base de ~220px pero puede crecer o encoger */
-            max-width: 17.5rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: center;
-        }
-
-        .poster-card:hover {
+        .profile-add-circle:hover {
+            background: rgba(0, 242, 255, 0.1);
+            box-shadow: var(--neon-glow);
             transform: scale(1.05);
         }
 
-        .poster-img-container {
+        /* --- Formulario de Creación --- */
+        #profile-form {
             width: 100%;
-            aspect-ratio: 2/3;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.3); /* Recuadro delgado transparente */
-            background: rgba(255, 255, 255, 0.05);
-            margin-bottom: 0.938rem;
-            padding: 0.313rem; /* Crea el efecto de recuadro alrededor de la imagen */
-            box-sizing: border-box;
+            animation: fadeIn 0.5s ease forwards;
         }
 
-        .poster-img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 0.5rem; /* Redondeado interno para encajar en el recuadro */
-        }
-
-        .poster-title {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 700;
-            letter-spacing: 0.125rem;
-            text-transform: uppercase;
-            color: var(--text-white);
-        }
-
-        #app-content {
+        .avatar-scroll {
             display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        #content-view {
-            flex: 1;
-            flex-direction: column;
-        }
-
-        /* Pantalla de Catálogo/Detalles */
-        #catalog-view {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 95%;
-            max-width: 62.5rem;
-            height: 85vh;
-            background: var(--bg-black);
-            z-index: 3000;
-            display: none;
-            flex-direction: column;
-            overflow-y: auto;
-            border-radius: 1.5rem;
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            box-shadow: 0 0 80px rgba(0, 0, 0, 0.9);
-        }
-
-        /* Globo de Bienvenida Elegante */
-        .welcome-balloon {
-            position: fixed;
-            top: 2.5rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(-1.25rem);
-            background: rgba(18, 18, 18, 0.9);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--neon-turquoise);
-            padding: 1.25rem 2.188rem;
-            border-radius: 6.25rem;
-            z-index: 5000;
-            display: none;
-            opacity: 0;
-            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            text-align: center;
-            width: 85%;
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.2), inset 0 0 10px rgba(0, 229, 255, 0.1);
-        }
-
-        .catalog-banner-container {
-            width: 100%;
-            height: 45vh;
-            position: relative;
-        }
-
-        .catalog-banner-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
-        }
-
-        .btn-back-catalog {
-            position: absolute;
-            top: 1.875rem;
-            left: 1.875rem;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 229, 255, 0.5);
-            color: var(--neon-turquoise);
-            padding: 0.75rem;
-            border-radius: 50%;
-            cursor: pointer;
-            backdrop-filter: blur(5px);
-            transition: var(--transition);
-        }
-
-        .catalog-info {
-            padding: 1.875rem 2.5rem;
-        }
-
-        .catalog-meta {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            letter-spacing: 0.125rem;
-            text-transform: uppercase;
-            margin-top: 0.625rem;
-        }
-
-        .empty-state {
-            padding: 3.75rem 1.25rem;
-            border: 1px dashed rgba(0, 229, 255, 0.2);
-            border-radius: 1.25rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.188rem;
-            font-size: 0.8rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 1.25rem;
-            border: 1px solid rgba(0, 229, 255, 0.1);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            width: 100%;
-            max-width: 26.25rem; /* Mantiene el formulario compacto */
-            margin: 0 auto;
-        }
-
-        .avatar-preview { margin-bottom: 1.875rem; }
-
-        #preview-img {
-            width: 6.875rem; height: 6.875rem;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--neon-turquoise);
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
-            padding: 0.313rem;
-            background: var(--bg-black);
-        }
-
-        .form-group { text-align: left; margin-bottom: 1.563rem; }
-        .form-group label {
-            font-size: 0.65rem; font-weight: 700;
-            color: var(--text-muted); letter-spacing: 0.094rem;
-            margin-bottom: 0.625rem; display: block;
-        }
-
-        .form-group input {
-            width: 100%; background: transparent; border: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0.625rem 0; color: white; font-family: inherit;
-            outline: none; transition: var(--transition);
-        }
-
-        .form-group input:focus { border-color: var(--neon-turquoise); }
-
-        .avatar-options {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 0.938rem;
-            margin-top: 0.938rem;
             overflow-x: auto;
-            padding: 0.625rem 0.313rem 1.25rem;
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
-            -webkit-overflow-scrolling: touch;
-            scroll-snap-type: x mandatory;
+            gap: 1.5rem;
+            padding: 1rem 0.5rem;
+            margin: 1.5rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-turquoise) transparent;
         }
 
-        .avatar-options::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
+        .avatar-scroll::-webkit-scrollbar { height: 4px; }
+        .avatar-scroll::-webkit-scrollbar-thumb { background: var(--neon-turquoise); border-radius: 10px; }
+
+        .avatar-option:hover {
+            transform: scale(1.1);
+            border-color: rgba(0, 242, 255, 0.5);
         }
 
         .avatar-option {
-            flex-shrink: 0;
-            width: 3.438rem; height: 3.438rem;
-            border-radius: 50%; cursor: pointer;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: var(--transition); object-fit: cover; opacity: 0.6;
-            scroll-snap-align: center;
+            min-width: 4.5rem;
+            height: 4.5rem;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border 0.3s;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
         }
 
-        .avatar-option:hover, .avatar-option.selected {
-            opacity: 1; border-color: var(--neon-turquoise);
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        .avatar-option.selected {
+            border-color: var(--neon-turquoise);
+            box-shadow: var(--neon-glow);
         }
 
-        button {
-            width: 100%; background: var(--neon-turquoise); color: var(--bg-black);
-            border: none; padding: 1rem; border-radius: 0.5rem;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 0.125rem;
-            cursor: pointer; transition: var(--transition); margin-top: 0.625rem;
+        .avatar-option svg { width: 70%; height: 70%; fill: var(--neon-turquoise); opacity: 0.8; }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            outline: none;
         }
 
-        button:hover {
-            box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+        input[type="text"]:focus {
+            border-color: var(--neon-turquoise);
+        }
+
+        .btn-start {
+            background: var(--neon-turquoise);
+            color: #000;
+            border: 1px solid var(--neon-turquoise);
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--neon-glow);
+        }
+
+        .btn-start:hover {
+            background: transparent;
+            color: var(--neon-turquoise);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.8);
             transform: translateY(-2px);
         }
 
-        #video-overlay {
+        /* --- Pantalla de Carga (Transición) --- */
+        #loading-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--bg-black);
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.1), transparent 80%),
-                radial-gradient(circle at 10% 10%, rgba(0, 229, 255, 0.05), transparent 40%);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* Efecto de Scanlines/CRT sobre la transición */
-        .overlay-scanlines {
-            position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 3px, 3px 100%;
-            pointer-events: none;
-            z-index: 2001;
+            background: #000;
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
         }
 
-        #video-overlay video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* Mantiene la integridad del logo */
-            position: relative;
-            z-index: 1999;
-            filter: brightness(1.1) contrast(1.1);
+        #intro-video {
+            width: 90%;
+            max-width: 800px;
+            margin-bottom: 2rem;
         }
 
-        /* Loader de transición */
-        .transition-loader {
-            position: absolute;
-            bottom: 12%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 15.625rem;
-            text-align: center;
-            z-index: 2002;
-        }
-
-        .loader-text {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.6rem;
-            color: var(--neon-turquoise);
-            letter-spacing: 0.25rem;
-            text-transform: uppercase;
-            margin-bottom: 0.938rem;
-            text-shadow: 0 0 10px var(--neon-turquoise);
-            animation: pulse-loader 1.5s infinite;
-        }
-
-        .loader-bar-bg {
-            width: 100%;
+        .progress-container {
+            width: 80%;
+            max-width: 400px;
             height: 2px;
-            background: rgba(0, 229, 255, 0.1);
+            background: #222;
+            margin-top: 2rem;
             position: relative;
             overflow: hidden;
         }
 
-        .loader-bar-fill {
-            position: absolute;
-            top: 0; left: 0; height: 100%;
+        .progress-bar {
             width: 0%;
-            background: var(--neon-turquoise);
-            box-shadow: 0 0 15px var(--neon-turquoise);
-            transition: width 3s linear;
-        }
-
-        @keyframes pulse-loader {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        #particles-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
             height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            display: none;
-        }
-
-        .entry-view {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 2.5rem 0;
-        }
-
-        .start-circle {
-            width: 11.25rem;
-            height: 11.25rem;
-            border-radius: 50%;
-            border: 1px solid var(--neon-turquoise);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: var(--transition);
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.9rem;
-            letter-spacing: 0.125rem;
-            color: var(--neon-turquoise);
-            background: rgba(0, 229, 255, 0.05);
-            text-align: center;
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
-            text-transform: uppercase;
-        }
-
-        .start-circle:hover {
             background: var(--neon-turquoise);
-            color: var(--bg-black);
-            box-shadow: 0 0 50px rgba(0, 229, 255, 0.4);
-            transform: scale(1.05);
+            box-shadow: var(--neon-glow);
+            animation: load 2.5s ease-in-out forwards;
         }
 
-        /* Estilos del Menú Lateral */
-        .main-menu-btn {
-            position: fixed;
-            top: 1.875rem;
-            left: 1.875rem;
-            z-index: 101;
+        .status-text {
+            font-size: 0.8rem;
+            letter-spacing: 3px;
             color: var(--neon-turquoise);
-            cursor: pointer;
-            display: none;
-            opacity: 0.6;
-            transition: var(--transition);
-        }
-
-        body.content-active .main-menu-btn {
-            display: block;
-        }
-
-        .main-menu-btn:hover {
-            opacity: 1;
-            filter: drop-shadow(0 0 8px var(--neon-turquoise));
-        }
-
-        .side-menu {
-            position: fixed;
-            top: 0;
-            left: -18.75rem;
-            width: 17.5rem;
-            height: 100vh;
-            background: rgba(5, 5, 5, 0.98);
-            backdrop-filter: blur(20px);
-            box-shadow: none;
-            z-index: 2100;
-            transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 6.25rem 1.875rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1.563rem;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .side-menu.active {
-            left: 0;
-            visibility: visible;
-            pointer-events: all;
-        }
-
-        .side-menu-item {
-            color: var(--text-white);
-            text-decoration: none;
-            font-size: 0.9rem;
-            letter-spacing: 0.188rem;
-            font-family: 'Syncopate', sans-serif;
+            margin-top: 1rem;
             text-transform: uppercase;
-            transition: var(--transition);
             opacity: 0.7;
-            display: flex;
-            align-items: center;
-            gap: 0.938rem;
-            position: relative;
         }
 
-        .side-menu-item:hover {
-            opacity: 1;
-            color: var(--neon-turquoise);
-            padding-left: 0.625rem;
-        }
-
-        .close-menu {
-            position: absolute;
-            top: 1.875rem;
-            right: 1.875rem;
-            color: var(--neon-turquoise);
-            cursor: pointer;
-            opacity: 0.6;
-            transition: var(--transition);
-        }
-
-        .close-menu:hover {
-            opacity: 1;
-            transform: rotate(90deg);
-        }
-
-        /* Estilos de la sección de reglas */
-        .rules-container {
-            position: relative;
-            text-align: left;
+        /* --- Plataforma Principal --- */
+        #main-app {
             width: 100%;
-            max-width: 37.5rem;
-            margin: 1.25rem auto;
-            padding: 1.875rem;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 1.25rem;
-            border: 1px solid rgba(0, 229, 255, 0.1);
-            backdrop-filter: blur(5px);
-        }
-        .rules-container h2 {
-            font-family: 'Syncopate', sans-serif;
-            color: var(--neon-turquoise);
-            font-size: 1.6rem; /* Título de reglas más grande */
-            margin-bottom: 1.563rem;
-            letter-spacing: 0.125rem;
-            text-transform: uppercase;
-        }
-        .rules-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .rules-list li {
-            margin-bottom: 1.125rem;
-            font-size: 0.85rem;
-            line-height: 1.6;
-            color: var(--text-white);
-            display: flex;
-            gap: 0.75rem;
-            opacity: 0.8;
-        }
-        .rules-list li::before {
-            content: "›";
-            color: var(--neon-turquoise);
-            font-weight: 700;
-        }
-        .creator-credits {
-            margin-top: 2.5rem;
-            padding-top: 1.25rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.125rem;
-            color: var(--text-muted);
+            padding: 2rem;
             text-align: center;
         }
 
-        .close-rules {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            color: var(--neon-turquoise);
-            cursor: pointer;
-            opacity: 0.6;
-            transition: var(--transition);
-        }
-        .close-rules:hover {
-            opacity: 1;
-            transform: rotate(90deg);
-        }
-
-        /* Estilos de la barra de búsqueda (Solo segunda pantalla) */
-        .search-box {
-            position: relative;
-            margin: 1.875rem auto 0;
-            display: none;
-            max-width: 34.375rem;
-            width: 100%;
-            align-items: center;
-            z-index: 1000;
-            transition: var(--transition);
-        }
-
-        body.content-active .search-box {
-            display: flex;
-        }
-
-        .search-box input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-radius: 2.5rem;
-            padding: 1.125rem 1.563rem 1.125rem 3.75rem;
-            color: white;
-            font-family: inherit;
-            outline: none;
-            transition: var(--transition);
+        .subtitle {
             font-size: 1.1rem;
-            letter-spacing: 0.063rem;
-        }
-
-        .search-box input:focus {
-            border-color: var(--neon-turquoise);
-            box-shadow: 0 0 30px rgba(0, 229, 255, 0.15), inset 0 0 10px rgba(0, 229, 255, 0.1);
-            background: rgba(255, 255, 255, 0.07);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1.375rem;
             color: var(--neon-turquoise);
-            pointer-events: none;
-            opacity: 0.8;
-            width: 1.5rem;
-            height: 1.5rem;
-        }
-
-        .search-results {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 100%;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 1.25rem;
-            margin-top: 0.625rem;
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            display: none;
-            max-height: 15.625rem;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .search-results.active {
-            display: block;
-        }
-
-        .result-item {
-            padding: 0.938rem 1.563rem;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .result-item:last-child { border-bottom: none; }
-
-        .result-item:hover {
-            background: rgba(0, 229, 255, 0.1);
-            color: var(--neon-turquoise);
-        }
-
-        .main-footer {
-            margin-top: auto;
-            padding: 40px 20px;
-            border-top: 1px solid rgba(0, 229, 255, 0.1);
-            text-align: center;
-        }
-
-        .main-footer p {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            margin-bottom: 15px;
+            text-shadow: var(--neon-glow);
+            letter-spacing: 4px;
             text-transform: uppercase;
+            margin-top: 0;
+            margin-bottom: 3rem;
         }
 
-        .tiktok-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--neon-turquoise);
-            text-decoration: none;
-            font-family: 'Syncopate', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            transition: var(--transition);
-            opacity: 0.7;
+        .welcome-msg { margin-top: 2rem; color: var(--neon-turquoise); }
+
+        /* Animaciones */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes load { 0% { width: 0%; } 100% { width: 100%; } }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
-        .tiktok-link:hover {
-            opacity: 1;
-            text-shadow: 0 0 10px var(--neon-turquoise);
-        }
-
-        /* Estilos del Banner de Video (Segunda Pantalla) */
-        .video-banner-container {
-            display: none;
-            width: 95%;
-            max-width: 56.25rem; /* Más alargado */
-            margin: 1.875rem auto;
-            border-radius: 0.938rem;
-            overflow: hidden;
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            box-shadow: 0 0 50px rgba(0, 229, 255, 0.2);
-            background: black;
-        }
-
-        body.content-active .video-banner-container {
-            display: block;
-        }
-
-        .video-banner-container video {
-            width: 100%;
-            height: auto;
-            display: block;
-            opacity: 0.6; /* Transparencia solicitada */
-        }
-
-        /* Media Queries para Responsividad Total */
-        @media (max-width: 768px) {
-            .logo {
-                font-size: 3rem;
-                letter-spacing: 8px;
-                margin-right: -8px;
-            }
-            
-            .section-title {
-                font-size: 1.4rem;
-                padding-left: 20px;
-            }
-
-            .posters-grid {
-                justify-content: center;
-                padding: 0 20px;
-            }
-
-            .poster-card {
-                flex: 0 1 160px; /* Postres más pequeños en tablets */
-            }
-
-            .start-circle {
-                width: 150px;
-                height: 150px;
-                font-size: 0.8rem;
-            }
-
-            .card {
-                width: 90%;
-                padding: 30px 20px;
-            }
-
-            .search-box input {
-                font-size: 1rem;
-                padding: 15px 20px 15px 50px;
-            }
-        }
-
+        /* Responsivo */
         @media (max-width: 600px) {
-            body:not(.content-active) {
-                padding-top: 0;
-                align-items: center; /* Centrado vertical */
-                justify-content: center;
-                height: 100vh;
-            }
-
-            body:not(.content-active) .container {
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                padding: 20px;
-            }
-
-            .logo {
-                font-size: 15vw; /* Mucho más grande */
-                letter-spacing: 2vw;
-                margin-right: -2vw;
-                font-size: 12vw;
-                letter-spacing: 4px;
-                margin-right: -4px;
-            }
-
-            .tagline {
-                font-size: 1.2rem;
-                letter-spacing: 6px;
-                margin-top: 20px;
-            }
-
-            .divider {
-                margin: 80px auto;
-                height: 6px;
-                opacity: 0.9;
-            }
-
-            /* Reducir ligeramente el logo cuando el contenido está activo para dar espacio a la interfaz */
-            body.content-active .logo {
-                font-size: 14vw;
-                letter-spacing: 10px;
-                margin-right: -10px;
-                font-size: 10vw;
-                letter-spacing: 4px;
-            }
-
-            .settings-container {
-                top: 20px;
-                right: 20px;
-            }
-
-            .main-menu-btn {
-                top: 20px;
-                left: 20px;
-            }
-            body.content-active {
-                padding: 80px 0 20px 0;
-            }
-            .side-menu {
-                width: 100%;
-                left: -100%;
-                padding: 100px 40px;
-            }
-            .card {
-                padding: 60px 20px;
-                width: 100%;
-                text-align: center;
-                border-radius: 30px;
-            }
-
-            .start-circle {
-                width: 92vw; /* Casi el ancho total del móvil */
-                height: 92vw;
-                font-size: 6rem; /* Ajustado para que quepa bien siendo enorme */
-                border-width: 10px;
-                font-size: 3rem; /* Reducido de 6rem para evitar desborde */
-                border-width: 4px;
-                margin-top: 40px;
-                box-shadow: 0 0 100px rgba(0, 229, 255, 0.4);
-            }
-
-            #saved-avatar-img {
-                width: 40vw !important; 
-                height: 40vw !important;
-                margin-bottom: 30px !important;
-            }
-
-            #saved-name-text {
-                font-size: 15vw !important; /* Nombre de usuario GIGANTE */
-                font-size: 8vw !important; /* Ajustado */
-                max-width: 90% !important;
-                line-height: 1.1;
-            }
-
-            #txt-enter {
-                font-size: 1.5rem !important; 
-                margin-top: 15px !important;
-                letter-spacing: 10px !important;
-                opacity: 1 !important;
-            }
-
-            .avatar-option {
-                width: 70px; /* Opciones de avatar más grandes */
-                height: 70px;
-            }
-            .rules-container {
-                padding: 25px 15px;
-                margin: 10px;
-                text-align: center;
-            }
-            .search-box input {
-                padding: 18px 20px 18px 55px;
-                font-size: 1.1rem;
-            }
-            .search-icon {
-                left: 20px;
-                width: 22px;
-                height: 22px;
-            }
-            .section-title {
-                font-size: 14vw; /* Título de sección gigante */
-                font-size: 8vw; /* Reducido de 14vw */
-                text-align: left; /* Cambiado a izquierda para permitir el desplazamiento por padding */
-                letter-spacing: 4px;
-                padding-left: 20px; /* Ajuste de margen para títulos grandes */
-            }
-            
-            .posters-grid {
-                justify-content: center;
-                padding: 0 10px;
-            }
-
-            .poster-card {
-                width: 100%; /* Póster a todo lo ancho */
-            }
-
-            .poster-title {
-                font-size: 12vw; /* Título de película gigante */
-                font-size: 0.8rem; /* Más estético que el VW gigante */
-                margin-top: 15px;
-                line-height: 1;
-            }
-
-            #catalog-view {
-                width: 100%;
-                height: 100%;
-                top: 0; left: 0; transform: none;
-                border-radius: 0;
-            }
-
-            .catalog-banner-container {
-                height: 40vh;
-            }
-
-            .catalog-meta {
-                font-size: 5vw; /* Metadatos muy legibles */
-                text-align: center;
-            }
-
-            .rules-list li {
-                justify-content: center;
-            }
+            h1.logo { font-size: 2.5rem; letter-spacing: 1.2rem; text-align: left; margin-left: -1rem; }
+            .subtitle { font-size: 0.8rem; letter-spacing: 2px; }
+            .btn-start { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="settings-container">
-        <div class="settings-btn" onclick="toggleSettings()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
+
+    <!-- PANTALLA 1: SELECCIÓN / CREACIÓN -->
+    <section id="profile-selection">
+        <h1 class="logo">INTROPERA</h1>
+        <div class="divider"></div>
+        <p class="subtitle">plataforma de streaming de series indie</p>
+        
+        <div id="initial-view">
+            <div class="profile-add-circle flex-center" onclick="showForm()">+</div>
+            <p>Añadir Perfil</p>
         </div>
-        <div id="settings-menu" class="settings-menu">
-            <div class="menu-item" id="lang-toggle" onclick="changeLanguage()">Idioma: Inglés</div>
-        </div>
-    </div>
 
-    <!-- Globo de bienvenida -->
-    <div id="welcome-balloon" class="welcome-balloon">
-        <span id="welcome-text" style="font-family: 'Montserrat', sans-serif; font-size: 0.9rem; color: white; letter-spacing: 1px; line-height: 1.4;"></span>
-    </div>
-
-    <div class="main-menu-btn" onclick="toggleSideMenu()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-    </div>
-
-    <div id="side-menu" class="side-menu">
-        <div class="close-menu" onclick="toggleSideMenu()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </div>
-        <a href="#" class="side-menu-item" onclick="navigateTo('home')">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span id="m-home">Inicio</span>
-        </a>
-        <a href="#" class="side-menu-item" onclick="navigateTo('series')">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M7 3v18"/><path d="M17 3v18"/><path d="M3 7h4"/><path d="M3 12h4"/><path d="M3 17h4"/><path d="M17 7h4"/><path d="M17 12h4"/><path d="M17 17h4"/></svg>
-            <span id="m-series">Series</span>
-        </a>
-        <a href="#" class="side-menu-item" onclick="navigateTo('profile')">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span id="m-profile">Perfil</span>
-        </a>
-        <a href="#" class="side-menu-item" onclick="navigateTo('brand')">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-            <span id="m-brand">Intropera</span>
-        </a>
-    </div>
-
-    <div class="container">
-        <header>
-            <h1 class="logo">INTROPERA</h1>
-            <div class="divider"></div>
-            <p class="tagline" id="txt-tagline">Plataforma de Streaming Indie</p>
-            <div class="video-banner-container">
-                <video id="banner-video" src="intro.mp4" autoplay loop muted playsinline></video>
+        <div id="profile-form" class="hidden menu-card">
+            <p>Escoge tu avatar</p>
+            <div class="avatar-scroll" id="avatar-list">
+                <!-- Se generan vía JS -->
             </div>
-            <div class="search-box">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" id="search-input" placeholder="Buscar series..." oninput="filterSeries()" autocomplete="off">
-                <div id="search-results" class="search-results"></div>
-            </div>
-        </header>
-        <div id="app-content">
-            <!-- Pantalla inicial de entrada -->
-            <div id="entry-view" class="entry-view">
-                <div id="register-ui">
-                    <div class="start-circle" onclick="showRegistration()" id="btn-entry">Regístrate</div>
-                </div>
-
-                <div id="saved-profile-ui" style="display: none; flex-direction: column; align-items: center;">
-                    <div class="start-circle" onclick="enterWithProfile()">
-                        <img id="saved-avatar-img" src="" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid var(--neon-turquoise); margin-bottom: 10px;">
-                        <span id="saved-name-text" style="font-size: 0.8rem; display: block; overflow: hidden; text-overflow: ellipsis; max-width: 140px; letter-spacing: 1px;"></span>
-                        <small style="font-size: 0.5rem; margin-top: 5px; opacity: 0.8;" id="txt-enter">Entrar</small>
-                    </div>
-                    <div onclick="clearProfile()" style="margin-top: 20px; font-size: 0.65rem; color: var(--text-muted); cursor: pointer; text-transform: uppercase; letter-spacing: 1px;" id="btn-logout">Eliminar Perfil</div>
-                </div>
-            </div>
-
-            <div class="card" id="profile-view" style="display: none;">
-                <div class="avatar-preview">
-                    <img id="preview-img" src="https://api.dicebear.com/7.x/shapes/svg?seed=1&backgroundColor=050505" alt="Avatar">
-                </div>
-                <div class="form-group">
-                    <label for="profile-name" id="lbl-username">NOMBRE DE USUARIO</label>
-                    <input type="text" id="profile-name" placeholder="Ingresa tu nombre..." autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label id="lbl-avatar">SELECCIONA TU AVATAR</label>
-                    <div class="avatar-options">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=1&backgroundColor=050505" class="avatar-option selected" onclick="selectAvatar(this.src, this)" alt="Abstract 1">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=2&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 2">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=3&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 3">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=4&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 4">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=5&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 5">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=6&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 6">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=7&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 7">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=8&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 8">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=9&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 9">
-                        <img src="https://api.dicebear.com/7.x/shapes/svg?seed=10&backgroundColor=050505" class="avatar-option" onclick="selectAvatar(this.src, this)" alt="Abstract 10">
-                    </div>
-                </div>
-                <button onclick="saveProfile()" id="btn-start">Comenzar Experiencia</button>
-            </div>
-
-            <!-- Nueva pantalla de contenidos -->
-            <div id="content-view" style="display: none;">
-                <div id="default-content">
-                    <h2 class="section-title" id="txt-newest">Lo más nuevo</h2>
-                    <div class="posters-grid">
-                        <div class="poster-card" onclick="openMovieCatalog()">
-                            <div class="poster-img-container">
-                                <img src="portada.png" alt="Cover">
-                            </div>
-                            <div class="poster-title">LOOK AT!</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="profile-section" style="display: none;">
-                    <div class="card" style="max-width: 400px; margin: 20px auto;">
-                        <div class="avatar-preview">
-                            <img id="display-profile-img" src="" alt="Avatar" style="width: 110px; height: 110px; border-radius: 50%; border: 2px solid var(--neon-turquoise); padding: 5px; background: var(--bg-black);">
-                        </div>
-                        <h2 id="display-profile-name" style="font-family: 'Syncopate', sans-serif; color: var(--text-white); font-size: 1.2rem; margin-bottom: 30px; letter-spacing: 2px;"></h2>
-                        <button onclick="clearProfile()" style="background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid rgba(255, 68, 68, 0.3); font-size: 0.8rem;" id="btn-delete-profile-main">Eliminar Perfil</button>
-                    </div>
-                </div>
-
-                <div id="intropera-section" style="display: none;">
-                    <div class="rules-container">
-                        <div class="close-rules" onclick="navigateTo('home')">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </div>
-                        <h2 id="rules-title">Reglas de Intropera</h2>
-                        <ul class="rules-list">
-                            <li id="rule-1">Plataforma dedicada exclusivamente al contenido indie.</li>
-                            <li id="rule-2">Los capítulos se presentan únicamente con el permiso explícito de los autores.</li>
-                            <li id="rule-3">Queda estrictamente prohibida la publicación de material sin autorización.</li>
-                            <li id="rule-4">Respeto absoluto a los derechos de autor y propiedad intelectual.</li>
-                        </ul>
-                        <div class="creator-credits" id="creator-info">creador: programador: DIEGO VGXX</div>
-                    </div>
-                </div>
-
-                <footer class="main-footer">
-                    <p id="txt-footer">© 2026 INTROPERA todos los derechos reservados siguenos en nuestras redes oficiales.</p>
-                    <a href="https://www.tiktok.com/@intropera" target="_blank" class="tiktok-link">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
-                        TIKTOK: INTROPERA
-                    </a>
-                </footer>
-            </div>
+            
+            <input type="text" id="username" placeholder="Tu nombre..." maxlength="15">
+            
+            <button class="btn-start" onclick="startExperience()">Comenzar Experiencia</button>
         </div>
-    </div>
+    </section>
 
-    <!-- Vista de Catálogo -->
-    <div id="catalog-view">
-        <div class="catalog-banner-container">
-            <img src="portada.png" alt="Banner">
-            <div class="btn-back-catalog" onclick="closeMovieCatalog()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            </div>
+    <!-- PANTALLA 2: TRANSICIÓN -->
+    <section id="loading-screen" class="hidden flex-center">
+        <video id="intro-video" src="intro.mp4" muted playsinline></video>
+        <div class="progress-container">
+            <div class="progress-bar"></div>
         </div>
-        <div class="catalog-info">
-            <h1 class="section-title" style="padding-left: 0; margin-top: 0;">LOOK AT!</h1>
-            <p class="catalog-meta">16+ - 2026- FANTASIA</p>
-        </div>
-    </div>
+        <div class="status-text">Iniciando Sistema...</div>
+    </section>
 
-    <canvas id="particles-canvas"></canvas>
-    <div id="video-overlay">
-        <video id="intro-video" src="intro.mp4" playsinline muted></video>
-        <div class="overlay-scanlines"></div>
-        <div class="transition-loader">
-            <div class="loader-text" id="txt-loading">Iniciando sistema...</div>
-            <div class="loader-bar-bg"><div class="loader-bar-fill" id="loader-fill"></div></div>
+    <!-- PANTALLA 3: DASHBOARD -->
+    <main id="main-app" class="hidden">
+        <h1 class="logo">INTROPERA</h1>
+        <div class="divider"></div>
+        <p class="subtitle">plataforma de streaming de series indie</p>
+        
+        <div class="welcome-msg" id="welcome-user"></div>
+        
+        <!-- Aquí iría el contenido de las series -->
+        <div style="margin-top: 5rem; border: 1px solid #222; padding: 4rem; color: #444;">
+            [ Catálogo Indie en construcción ]
         </div>
-    </div>
+    </main>
 
     <script>
-        let currentLang = 'es';
-        const translations = {
-            es: {
-                tagline: "Plataforma de Streaming Indie",
-                lblUsername: "NOMBRE DE USUARIO",
-                placeholder: "Ingresa tu nombre...",
-                lblAvatar: "SELECCIONA TU AVATAR",
-                btnStart: "Comenzar Experiencia",
-                langToggle: "Idioma: Inglés",
-                noContent: "sin contenido",
-                btnEntry: "Regístrate",
-                mHome: "Inicio",
-                mSeries: "Series",
-                mProfile: "Perfil",
-                mBrand: "Intropera",
-                rulesTitle: "Reglas de Intropera",
-                rule1: "Plataforma dedicada exclusivamente al contenido indie.",
-                rule2: "Los capítulos se presentan únicamente con el permiso explícito de los autores.",
-                rule3: "Queda estrictamente prohibida la publicación de material sin autorización.",
-                rule4: "Respeto absoluto a los derechos de autor y propiedad intelectual.",
-                creator: "creador: programador: DIEGO VGXX",
-                footer: "© 2026 INTROPERA todos los derechos reservados siguenos en nuestras redes oficiales.",
-                searchPlaceholder: "Buscar series...",
-                txtEnter: "Entrar",
-                btnLogout: "Eliminar Perfil",
-                txtLoading: "Iniciando sistema...",
-                newest: "Lo más nuevo"
-            },
-            en: {
-                tagline: "Indie Streaming Platform",
-                lblUsername: "USERNAME",
-                placeholder: "Enter your name...",
-                lblAvatar: "SELECT YOUR AVATAR",
-                btnStart: "Start Experience",
-                langToggle: "Language: Spanish",
-                noContent: "no content",
-                btnEntry: "Register",
-                mHome: "Home",
-                mSeries: "Series",
-                mProfile: "Profile",
-                mBrand: "Intropera",
-                rulesTitle: "Intropera Rules",
-                rule1: "Platform dedicated exclusively to indie content.",
-                rule2: "Chapters are presented only with explicit permission from authors.",
-                rule3: "Unauthorized publication of material is strictly prohibited.",
-                rule4: "Absolute respect for copyright and intellectual property.",
-                creator: "creator: programmer: DIEGO VGXX",
-                footer: "© 2026 INTROPERA all rights reserved follow us on our official networks.",
-                searchPlaceholder: "Search series...",
-                txtEnter: "Enter",
-                btnLogout: "Delete Profile",
-                txtLoading: "Starting system...",
-                newest: "Newest Content"
-            }
-        };
-
-        const seriesData = [
-            "Arcane: League of Legends",
-            "Better Call Saul",
-            "Cyberpunk: Edgerunners",
-            "Dark",
-            "Indie Animation Shorts",
-            "Love, Death & Robots",
-            "Mindhunter",
-            "Severance",
-            "Stranger Things",
-            "The Bear",
-            "The Boys",
-            "The Last of Us",
-            "The Sandman",
-            "Yellowjackets"
+        const avatars = [
+            '<path d="M50 10 L90 90 L10 90 Z M50 30 L75 80 L25 80 Z" fill-rule="evenodd"/>',
+            '<circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="15 10"/><circle cx="50" cy="50" r="20"/>',
+            '<rect x="20" y="20" width="60" height="60" fill="none" stroke="currentColor" stroke-width="2" transform="rotate(45 50 50)"/><rect x="35" y="35" width="30" height="30"/>',
+            '<path d="M10 50 Q 50 10 90 50 T 10 50" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="50" cy="50" r="8"/>',
+            '<path d="M50 15 L85 35 V65 L50 85 L15 65 V35 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="10"/>',
+            '<circle cx="35" cy="40" r="15" opacity="0.6"/><circle cx="65" cy="40" r="15" opacity="0.6"/><circle cx="50" cy="70" r="15" opacity="0.6"/>',
+            '<path d="M20 20 L80 80 M80 20 L20 80" stroke="currentColor" stroke-width="4"/><circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="2"/>',
+            '<path d="M50 5 L95 50 L50 95 L5 50 Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="15"/>',
+            '<path d="M50 20 A 30 30 0 1 1 50 80 A 30 30 0 1 1 50 20" fill="none" stroke="currentColor" stroke-width="8" stroke-dasharray="12 6"/>',
+            '<polygon points="50,10 60,40 90,40 65,60 75,90 50,70 25,90 35,60 10,40 40,40" fill="none" stroke="currentColor" stroke-width="2"/>'
         ];
 
-        function toggleSettings() {
-            document.getElementById('settings-menu').classList.toggle('active');
+        let selectedAvatarIndex = 0;
+
+        // Renderizar lista de avatars
+        const avatarList = document.getElementById('avatar-list');
+        avatars.forEach((svgInner, index) => {
+            const div = document.createElement('div');
+            div.className = `avatar-option ${index === 0 ? 'selected' : ''}`;
+            div.innerHTML = `<svg viewBox="0 0 100 100">${svgInner}</svg>`;
+            div.onclick = () => {
+                document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                selectedAvatarIndex = index;
+            };
+            avatarList.appendChild(div);
+        });
+
+        function showForm() {
+            document.getElementById('initial-view').classList.add('hidden');
+            document.getElementById('profile-form').classList.remove('hidden');
         }
 
-        function changeLanguage() {
-            currentLang = currentLang === 'es' ? 'en' : 'es';
-            const t = translations[currentLang];
-            document.getElementById('txt-tagline').textContent = t.tagline;
-            document.getElementById('lbl-username').textContent = t.lblUsername;
-            document.getElementById('profile-name').placeholder = t.placeholder;
-            document.getElementById('lbl-avatar').textContent = t.lblAvatar;
-            document.getElementById('btn-start').textContent = t.btnStart;
-            document.getElementById('txt-no-content').textContent = t.noContent;
-            document.getElementById('lang-toggle').textContent = t.langToggle;
-            document.getElementById('btn-entry').textContent = t.btnEntry;
-            document.getElementById('m-home').textContent = t.mHome;
-            document.getElementById('m-series').textContent = t.mSeries;
-            document.getElementById('m-profile').textContent = t.mProfile;
-            document.getElementById('m-brand').textContent = t.mBrand;
-            document.getElementById('rules-title').textContent = t.rulesTitle;
-            document.getElementById('rule-1').textContent = t.rule1;
-            document.getElementById('rule-2').textContent = t.rule2;
-            document.getElementById('rule-3').textContent = t.rule3;
-            document.getElementById('rule-4').textContent = t.rule4;
-            document.getElementById('creator-info').textContent = t.creator;
-            document.getElementById('txt-footer').textContent = t.footer;
-            document.getElementById('search-input').placeholder = t.searchPlaceholder;
-            document.getElementById('txt-enter').textContent = t.txtEnter;
-            document.getElementById('txt-loading').textContent = t.txtLoading;
-            document.getElementById('btn-logout').textContent = t.btnLogout;
-            document.getElementById('btn-delete-profile-main').textContent = t.btnLogout;
-            document.getElementById('txt-newest').textContent = t.newest;
-            toggleSettings();
-        }
-
-        function filterSeries() {
-            const input = document.getElementById('search-input');
-            const results = document.getElementById('search-results');
-            const query = input.value.toLowerCase().trim();
-
-            results.innerHTML = '';
-            
-            if (query === '') {
-                results.classList.remove('active');
+        function startExperience() {
+            const name = document.getElementById('username').value.trim();
+            if(!name) {
+                alert("Por favor, ingresa un nombre para tu perfil.");
                 return;
             }
 
-            const filtered = seriesData.filter(item => item.toLowerCase().includes(query));
+            // Guardar en LocalStorage
+            const profile = {
+                name: name,
+                avatar: selectedAvatarIndex
+            };
+            localStorage.setItem('intropera_profile', JSON.stringify(profile));
 
-            if (filtered.length > 0) {
-                filtered.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'result-item';
-                    div.textContent = item;
-                    div.onclick = () => {
-                        input.value = item;
-                        results.classList.remove('active');
-                    };
-                    results.appendChild(div);
-                });
-                results.classList.add('active');
-            } else {
-                results.classList.remove('active');
-            }
-        }
+            // Iniciar Transición
+            document.getElementById('profile-selection').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
 
-        function openMovieCatalog() {
-            document.getElementById('catalog-view').style.display = 'flex';
-        }
-
-        function closeMovieCatalog() {
-            document.getElementById('catalog-view').style.display = 'none';
-        }
-
-        function toggleSideMenu() {
-            document.getElementById('side-menu').classList.toggle('active');
-        }
-
-        function navigateTo(view) {
-            document.getElementById('default-content').style.display = view === 'home' ? 'block' : 'none';
-            document.getElementById('intropera-section').style.display = view === 'brand' ? 'block' : 'none';
-            document.getElementById('profile-section').style.display = view === 'profile' ? 'block' : 'none';
-
-            if (view === 'profile') {
-                const saved = localStorage.getItem('intropera_profile');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    document.getElementById('display-profile-img').src = data.avatar;
-                    document.getElementById('display-profile-name').textContent = data.name;
-                }
-            }
-            
-            // Cerrar menú si está abierto
-            if (document.getElementById('side-menu').classList.contains('active')) {
-                toggleSideMenu();
-            }
-        }
-
-        function showRegistration() {
-            document.getElementById('entry-view').style.display = 'none';
-            document.getElementById('profile-view').style.display = 'block';
-            
-            // Limpiar datos previos para permitir una nueva registración "fresca"
-            document.getElementById('profile-name').value = '';
-            document.getElementById('preview-img').src = "https://api.dicebear.com/7.x/shapes/svg?seed=1&backgroundColor=050505";
-            document.querySelectorAll('.avatar-option').forEach(img => img.classList.remove('selected'));
-            if(document.querySelector('.avatar-option')) document.querySelector('.avatar-option').classList.add('selected');
-        }
-
-        function selectAvatar(url, element) {
-            document.getElementById('preview-img').src = url;
-            document.querySelectorAll('.avatar-option').forEach(img => img.classList.remove('selected'));
-            element.classList.add('selected');
-        }
-
-        function saveProfile() {
-            const name = document.getElementById('profile-name').value;
-            const avatarImg = document.getElementById('preview-img').src;
-            if (name.trim() !== "") {
-                localStorage.setItem('intropera_profile', JSON.stringify({ name: name, avatar: avatarImg }));
-                startTransition();
-            } else {
-                const errorMsg = currentLang === 'es' 
-                    ? "Por favor, ingresa un nombre para continuar." 
-                    : "Please enter a name to continue.";
-                alert(errorMsg);
-            }
-        }
-
-        function enterWithProfile() {
-            startTransition();
-        }
-
-        function startTransition() {
-            const overlay = document.getElementById('video-overlay');
+            // Reproducir video de introducción
             const video = document.getElementById('intro-video');
-            const loader = document.getElementById('loader-fill');
-            
-            // Resetear loader y video
-            loader.style.transition = 'none';
-            loader.style.width = '0%';
-            overlay.style.display = 'flex';
-            video.currentTime = 0;
-            video.play();
+            if (video) video.play();
 
-            // Iniciar animación de barra
+            // Simular carga y mostrar app principal
             setTimeout(() => {
-                loader.style.transition = 'width 3s linear';
-                loader.style.width = '100%';
-            }, 50);
-
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                document.getElementById('profile-view').style.display = 'none';
-                document.getElementById('entry-view').style.display = 'none';
-                document.getElementById('content-view').style.display = 'flex';
-                document.body.classList.add('content-active');
-                
-                // Mostrar globo de bienvenida
-                const saved = localStorage.getItem('intropera_profile');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    showWelcomeBalloon(data.name);
-                }
-                
-                initParticles();
-            }, 3000);
+                showMainApp(profile);
+            }, 3000); // 3 segundos de "video/carga"
         }
 
-        function showWelcomeBalloon(name) {
-            const balloon = document.getElementById('welcome-balloon');
-            const text = document.getElementById('welcome-text');
-            text.innerHTML = `Bienvenido a <strong>INTROPERA</strong> ${name.toUpperCase()}, ¡las mejores series indie están aquí!`;
-            
-            balloon.style.display = 'block';
-            setTimeout(() => { balloon.style.opacity = '1'; balloon.style.transform = 'translateX(-50%) translateY(0)'; }, 100);
-
-            setTimeout(() => {
-                balloon.style.opacity = '0';
-                balloon.style.transform = 'translateX(-50%) translateY(-20px)';
-                setTimeout(() => { balloon.style.display = 'none'; }, 600);
-            }, 5000);
+        function showMainApp(profile) {
+            document.getElementById('loading-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('welcome-user').innerText = `Bienvenido de vuelta, ${profile.name}`;
         }
 
-        function checkSavedProfile() {
-            const saved = localStorage.getItem('intropera_profile');
-            const registerUi = document.getElementById('register-ui');
-            const savedUi = document.getElementById('saved-profile-ui');
-
-            if (saved) {
-                const data = JSON.parse(saved);
-                registerUi.style.display = 'none';
-                savedUi.style.display = 'flex';
-                document.getElementById('saved-avatar-img').src = data.avatar;
-                document.getElementById('saved-name-text').textContent = data.name;
-            } else {
-                registerUi.style.display = 'block';
-                savedUi.style.display = 'none';
+        // Comprobar si ya existe perfil al cargar
+        window.onload = () => {
+            const savedProfile = localStorage.getItem('intropera_profile');
+            if(savedProfile) {
+                const profile = JSON.parse(savedProfile);
+                // Si ya existe, podríamos saltar directo o mostrar el avatar. 
+                // Para este ejercicio, permitiremos crear uno nuevo o detectar el existente:
+                console.log("Perfil detectado:", profile.name);
             }
-        }
-
-        function clearProfile() {
-            localStorage.removeItem('intropera_profile');
-            
-            // Si el usuario está dentro de la plataforma, reiniciar al estado inicial
-            if (document.body.classList.contains('content-active')) {
-                document.body.classList.remove('content-active');
-                document.getElementById('content-view').style.display = 'none';
-                document.getElementById('entry-view').style.display = 'flex';
-                document.getElementById('particles-canvas').style.display = 'none';
-                navigateTo('home');
-            }
-
-            checkSavedProfile();
-        }
-
-        function initParticles() {
-            const canvas = document.getElementById('particles-canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.style.display = 'block';
-            let particles = [];
-            const count = 60;
-
-            function resize() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
-            for(let i=0; i<count; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 2 + 1,
-                    speed: Math.random() * 0.5 + 0.2,
-                    opacity: Math.random() * 0.4
-                });
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                particles.forEach(p => {
-                    ctx.fillStyle = `rgba(0, 229, 255, ${p.opacity})`;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    p.y += p.speed;
-                    if(p.y > canvas.height) { p.y = -10; p.x = Math.random() * canvas.width; }
-                });
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
-
-        // Cerrar resultados de búsqueda al hacer clic fuera
-        document.addEventListener('click', (e) => {
-            const box = document.querySelector('.search-box');
-            if (box && !box.contains(e.target)) {
-                document.getElementById('search-results').classList.remove('active');
-            }
-        });
-
-        // Inicializar estado de perfil y configuración de video
-        checkSavedProfile();
-        
-        // Ajustar velocidad del video banner para que sea más estético y lento
-        window.addEventListener('load', () => {
-            document.getElementById('banner-video').playbackRate = 0.75;
-        });
+        };
     </script>
 </body>
 </html>
