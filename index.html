@@ -14,6 +14,35 @@
             --transition-speed: 0.5s;
         }
 
+        /* --- Modal de Perfil --- */
+        .profile-modal {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 85%; max-width: 400px;
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid var(--neon-turquoise);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            z-index: 500;
+            text-align: center;
+            visibility: hidden; opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+            backdrop-filter: blur(15px);
+        }
+        .profile-modal.active { visibility: visible; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .modal-avatar { width: 7rem; height: 7rem; margin: 0 auto 1.5rem; border: 1px solid var(--neon-turquoise); border-radius: 50%; padding: 0.8rem; }
+        .modal-avatar svg { width: 100%; height: 100%; fill: var(--neon-turquoise); }
+        .modal-desc { color: rgba(255,255,255,0.6); font-size: 0.9rem; margin: 1rem 0 2rem; line-height: 1.4; }
+        
+        .btn-delete { 
+            background: rgba(255, 68, 68, 0.1); color: #ff4444; border: 1px solid #ff4444; 
+            padding: 0.6rem 1.2rem; border-radius: 0.5rem; cursor: pointer; transition: all 0.3s;
+            text-transform: uppercase; font-size: 0.75rem; font-weight: bold;
+        }
+        .btn-delete:hover { background: #ff4444; color: #fff; box-shadow: 0 0 15px rgba(255, 68, 68, 0.4); }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -78,7 +107,7 @@
         /* --- Pantalla de Selección de Perfil --- */
         #profile-selection {
             width: 100%;
-            max-width: 850px;
+            max-width: 1000px;
             padding: 2rem;
             text-align: center;
         }
@@ -86,7 +115,7 @@
         .menu-card {
             background: rgba(15, 15, 15, 0.75);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 3rem 2rem;
+            padding: 2rem;
             border-radius: 2.5rem;
             width: 100%;
             backdrop-filter: blur(25px);
@@ -104,14 +133,14 @@
 
         h1.logo {
             font-size: 7rem;
-            letter-spacing: 3rem;
+            letter-spacing: 1rem;
             width: 100%;
-            text-align: left;
+            text-align: center;
             color: #ffffff;
             text-shadow: var(--white-glow);
             margin-bottom: 0.5rem;
             text-transform: uppercase;
-            margin-left: -6rem; /* Lo desplaza un poco más hacia la izquierda */
+            margin-right: -1rem; /* Compensa el letter-spacing para un centrado perfecto */
             animation: fadeIn 0.4s ease-out;
         }
 
@@ -125,8 +154,8 @@
         }
 
         .profile-add-circle {
-            width: 12rem;
-            height: 12rem;
+            width: 14rem;
+            height: 14rem;
             border: 2px dashed var(--neon-turquoise);
             border-radius: 50%;
             margin: 0 auto 2rem;
@@ -251,6 +280,87 @@
         }
         .lang-menu button:hover { color: var(--neon-turquoise); }
 
+        /* --- Menú Lateral (Sidebar) --- */
+        .menu-toggle {
+            position: fixed;
+            top: 2.5rem;
+            left: 2.5rem;
+            z-index: 200;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px;
+            transition: transform 0.3s ease;
+        }
+        .menu-toggle:hover { transform: scale(1.1); }
+        .menu-toggle .bar {
+            width: 30px;
+            height: 2px;
+            background-color: var(--neon-turquoise);
+            box-shadow: var(--neon-glow);
+            transition: 0.3s;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 300px;
+            height: 100%;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(0, 242, 255, 0.15);
+            z-index: 300;
+            transition: left 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.active { left: 0; }
+
+        .sidebar-header {
+            margin-bottom: 4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 1rem;
+        }
+
+        .nav-links { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; }
+        .nav-links li {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 1rem;
+            border-radius: 1rem;
+        }
+        .nav-links li:hover {
+            background: rgba(0, 242, 255, 0.1);
+            color: var(--neon-turquoise);
+            padding-left: 1.5rem;
+        }
+        .nav-links svg {
+            width: 1.8rem;
+            height: 1.8rem;
+            fill: currentColor;
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 250;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+        .sidebar-overlay.active { display: block; }
+
         #particle-container {
             position: fixed;
             top: 0;
@@ -303,8 +413,8 @@
 
         .logo-mini {
             font-size: 1.8rem;
-            letter-spacing: 2rem;
-            margin-right: -2rem; /* Compensa el espacio final para centrar perfecto */
+            letter-spacing: 1rem;
+            margin-right: -1rem; /* Compensa el espacio final para centrar perfecto */
             color: #fff;
             opacity: 0.6;
             margin-bottom: 0.5rem;
@@ -367,7 +477,7 @@
 
         .status-text {
             font-size: 0.10rem;
-            letter-spacing: 3px;
+            letter-spacing: 1.5px;
             color: var(--neon-turquoise);
             margin-top: 1rem;
             text-transform: uppercase;
@@ -387,7 +497,7 @@
         #main-app .logo {
             text-align: center;
             margin-left: 0;
-            margin-right: -3rem; /* Compensa el letter-spacing para un centrado perfecto */
+            margin-right: -1rem; /* Compensa el letter-spacing para un centrado perfecto */
             animation: slideInRight 0.3s ease-out forwards;
         }
 
@@ -412,7 +522,7 @@
             font-size: 1.5rem;
             color: var(--neon-turquoise);
             text-shadow: var(--neon-glow);
-            letter-spacing: 4px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             margin-top: 0;
             margin-bottom: 3rem;
@@ -442,18 +552,19 @@
         /* Responsivo */
         @media (max-width: 600px) {
             #profile-selection { padding: 0.8rem; max-width: 100%; display: flex; flex-direction: column; justify-content: center; height: 100%; }
-            h1.logo { font-size: 6rem; letter-spacing: 0.3rem; text-align: center; margin-left: 0; margin-top: 0; margin-bottom: 0; }
-            #main-app .logo { margin-right: -0.3rem; }
+            h1.logo { font-size: 6rem; letter-spacing: 0.15rem; text-align: center; margin-left: 0; margin-right: -0.15rem; margin-top: 0; margin-bottom: 0; }
+            #main-app .logo { margin-right: -0.15rem; }
             .divider { margin-bottom: 1.2rem; margin-top: 0.8rem; }
             .subtitle { font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 2.5rem; font-weight: 300; }
             .btn-start { width: 100%; height: 90px; font-size: 1.6rem; border-radius: 1.2rem; }
             .menu-card { 
-                padding: 2rem 1.2rem; 
-                border-radius: 1.5rem; 
+                padding: 1rem 0.5rem; 
+                border-radius: 1rem; 
                 margin-top: -8rem;
                 min-height: auto;
+                background: rgba(15, 15, 15, 0.5);
             }
-            .profile-add-circle { width: 18rem; height: 18rem; font-size: 8rem; }
+            .profile-add-circle { width: 20rem; height: 20rem; font-size: 9rem; }
             .avatar-scroll { gap: 2rem; margin: 2rem 0; }
             .avatar-option { min-width: 8rem; height: 8rem; }
             input[type="text"] { font-size: 26px; height: 95px; margin-bottom: 2rem; border-radius: 1.2rem; }
@@ -463,6 +574,38 @@
 <body>
     <div id="particle-container"></div>
     
+    <!-- Botón Menú Hamburguesa -->
+    <div class="menu-toggle hidden" onclick="toggleSidebar()">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-mini" style="opacity: 1; letter-spacing: 0.5rem;">INTROPERA</div>
+        </div>
+        <ul class="nav-links">
+            <li onclick="closeSidebar()"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></li>
+            <li onclick="closeSidebar()"><svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg><span>Series</span></li>
+            <li onclick="openProfile()"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Perfil</span></li>
+            <li onclick="closeSidebar()"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><span>Intropera</span></li>
+        </ul>
+    </nav>
+
+    <!-- Overlay para cerrar sidebar -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Modal de Información de Perfil -->
+    <div id="profile-modal" class="profile-modal">
+        <div class="modal-avatar" id="modal-avatar"></div>
+        <h2 id="modal-username"></h2>
+        <p class="modal-desc" id="modal-desc"></p>
+        <button class="btn-delete" id="btn-delete-profile" onclick="deleteProfile()">Eliminar Perfil</button>
+        <button onclick="closeProfile()" style="background:transparent; border:none; color:#555; display:block; margin: 1.5rem auto 0; cursor:pointer; font-size: 0.8rem;">Cerrar</button>
+    </div>
+
     <div id="lang-control" class="lang-toggle">
         <div class="lang-icon" onclick="toggleLangMenu()">
             <svg viewBox="0 0 24 24">
@@ -555,7 +698,9 @@
                 placeholder: "Tu nombre...",
                 btnStart: "Comenzar Experiencia",
                 status: "Iniciando Sistema...",
-                welcome: "Bienvenido de vuelta, "
+                welcome: "Bienvenido de vuelta, ",
+                profileDesc: "Explorador de contenido independiente. Amante de las historias únicas en Intropera.",
+                deleteProfile: "Eliminar Perfil"
             },
             en: {
                 subtitle: "indie series streaming platform",
@@ -564,7 +709,9 @@
                 placeholder: "Your name...",
                 btnStart: "Start Experience",
                 status: "Starting System...",
-                welcome: "Welcome back, "
+                welcome: "Welcome back, ",
+                profileDesc: "Independent content explorer. Lover of unique stories on Intropera.",
+                deleteProfile: "Delete Profile"
             }
         };
 
@@ -581,6 +728,43 @@
             };
             avatarList.appendChild(div);
         });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebar-overlay').classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('sidebar-overlay').classList.remove('active');
+        }
+
+        function openProfile() {
+            const profile = JSON.parse(localStorage.getItem('intropera_profile'));
+            if(!profile) return;
+            
+            const t = translations[currentLang];
+            document.getElementById('modal-username').innerText = profile.name;
+            document.getElementById('modal-avatar').innerHTML = `<svg viewBox="0 0 100 100">${avatars[profile.avatar]}</svg>`;
+            document.getElementById('modal-desc').innerText = t.profileDesc;
+            document.getElementById('btn-delete-profile').innerText = t.deleteProfile;
+            
+            closeSidebar();
+            document.getElementById('profile-modal').classList.add('active');
+            document.getElementById('sidebar-overlay').classList.add('active');
+        }
+
+        function closeProfile() {
+            document.getElementById('profile-modal').classList.remove('active');
+            document.getElementById('sidebar-overlay').classList.remove('active');
+        }
+
+        function deleteProfile() {
+            if(confirm(currentLang === 'es' ? "¿Eliminar perfil?" : "Delete profile?")) {
+                localStorage.removeItem('intropera_profile');
+                location.reload();
+            }
+        }
 
         function toggleLangMenu() {
             document.getElementById('lang-menu').classList.toggle('hidden');
@@ -662,6 +846,7 @@
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             document.getElementById('lang-control').classList.remove('hidden');
+            document.querySelector('.menu-toggle').classList.remove('hidden');
             const t = translations[currentLang];
             document.getElementById('welcome-user').innerText = `${t.welcome}${profile.name}`;
             createParticles();
