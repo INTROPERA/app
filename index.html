@@ -289,14 +289,14 @@
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 9px;
             padding: 10px;
             transition: transform 0.3s ease;
         }
         .menu-toggle:hover { transform: scale(1.1); }
         .menu-toggle .bar {
-            width: 30px;
-            height: 2px;
+            width: 45px;
+            height: 4px;
             background-color: var(--neon-turquoise);
             box-shadow: var(--neon-glow);
             transition: 0.3s;
@@ -305,8 +305,8 @@
         .sidebar {
             position: fixed;
             top: 0;
-            left: -320px;
-            width: 300px;
+            left: -420px;
+            width: 400px;
             height: 100%;
             background: rgba(5, 5, 5, 0.95);
             backdrop-filter: blur(20px);
@@ -320,18 +320,25 @@
         .sidebar.active { left: 0; }
 
         .sidebar-header {
-            margin-bottom: 4rem;
+            margin-bottom: 2rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             padding-bottom: 1rem;
         }
 
-        .nav-links { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; }
+        .nav-links { 
+            list-style: none; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 2.5rem; 
+            flex: 1; 
+            justify-content: center;
+        }
         .nav-links li {
             display: flex;
             align-items: center;
             gap: 1.5rem;
             color: rgba(255, 255, 255, 0.7);
-            font-size: 1rem;
+            font-size: 1.4rem;
             text-transform: uppercase;
             letter-spacing: 2px;
             cursor: pointer;
@@ -345,8 +352,8 @@
             padding-left: 1.5rem;
         }
         .nav-links svg {
-            width: 1.8rem;
-            height: 1.8rem;
+            width: 2.2rem;
+            height: 2.2rem;
             fill: currentColor;
             filter: drop-shadow(0 0 5px currentColor);
         }
@@ -534,8 +541,48 @@
             margin-bottom: 2rem;
         }
 
-        .welcome-msg { margin-top: 2rem; color: var(--neon-turquoise); }
-        #main-app .welcome-msg { animation: slideInRight 0.3s ease-out 0.2s both; }
+        .welcome-msg { 
+            position: relative;
+            background: var(--neon-turquoise);
+            color: #000;
+            padding: 0.8rem 1.8rem;
+            border-radius: 1.2rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 2rem;
+            box-shadow: var(--neon-glow);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .welcome-msg::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid var(--neon-turquoise);
+        }
+        #main-app .welcome-msg { animation: bubbleShow 4s ease-out 2s forwards; }
+
+        @keyframes bubbleShow {
+            0% { opacity: 0; transform: translateY(-100vh) scale(0.7); } /* Inicia oculto y muy arriba */
+            10% { opacity: 1; transform: translateY(0) scale(1); } /* Cae y se asienta */
+            85% { opacity: 1; transform: translateY(0) scale(1); } /* Permanece visible */
+            100% { opacity: 0; transform: translateY(-20px) scale(0.9); visibility: hidden; } /* Se desvanece y sube ligeramente */
+        }
+
+        .section-title {
+            text-align: left;
+            font-size: 1.8rem;
+            color: #ffffff;
+            text-shadow: var(--white-glow);
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            margin: 3rem 0 1rem 0.5rem;
+            animation: slideInRight 0.3s ease-out 0.25s both;
+        }
 
         /* Animaciones */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -558,16 +605,28 @@
             .subtitle { font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 2.5rem; font-weight: 300; }
             .btn-start { width: 100%; height: 90px; font-size: 1.6rem; border-radius: 1.2rem; }
             .menu-card { 
-                padding: 1rem 0.5rem; 
-                border-radius: 1rem; 
-                margin-top: -8rem;
-                min-height: auto;
-                background: rgba(15, 15, 15, 0.5);
+                padding: 4rem 2rem; 
+                border-radius: 3rem; 
+                margin-top: 0;
+                min-height: 85dvh;
+                width: 96%;
+                margin-left: auto;
+                margin-right: auto;
+                background: rgba(5, 5, 5, 0.98);
+                justify-content: space-around;
             }
-            .profile-add-circle { width: 20rem; height: 20rem; font-size: 9rem; }
+            .profile-add-circle { width: 24rem; height: 24rem; font-size: 11rem; }
             .avatar-scroll { gap: 2rem; margin: 2rem 0; }
             .avatar-option { min-width: 8rem; height: 8rem; }
             input[type="text"] { font-size: 26px; height: 95px; margin-bottom: 2rem; border-radius: 1.2rem; }
+            
+            .sidebar { width: 85%; left: -90%; }
+            .nav-links li { font-size: 2.2rem; padding: 2rem; gap: 2rem; }
+            .nav-links svg { width: 3.5rem; height: 3.5rem; }
+            .section-title { font-size: 2.8rem; margin-left: 1.2rem; margin-top: 4rem; letter-spacing: 0.15rem; }
+            .sidebar-header .logo-mini { font-size: 2.5rem; }
+            .menu-toggle { gap: 12px; }
+            .menu-toggle .bar { width: 65px; height: 7px; }
         }
     </style>
 </head>
@@ -657,6 +716,8 @@
 
     <!-- PANTALLA 3: DASHBOARD -->
     <main id="main-app" class="hidden">
+        <div class="welcome-msg" id="welcome-user"></div>
+
         <h1 class="logo">INTROPERA</h1>
         <div class="divider"></div>
         <p class="subtitle">plataforma de streaming de series indie</p>
@@ -665,7 +726,7 @@
             <video src="intro.mp4" autoplay muted playsinline loop></video>
         </div>
 
-        <div class="welcome-msg" id="welcome-user"></div>
+        <div class="section-title">Lo más nuevo</div>
         
         <!-- Aquí iría el contenido de las series -->
         <div style="margin-top: 5rem; border: 1px solid #222; padding: 4rem; color: #444;">
